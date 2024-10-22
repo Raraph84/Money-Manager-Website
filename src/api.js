@@ -4,6 +4,9 @@ export const logout = () => postNoContent("/auth/logout");
 export const getInflows = (includes) => getProp(withIncludes("/inflows", includes), "inflows");
 export const getInflow = (inflowId, includes) => get(withIncludes("/inflows/" + inflowId, includes));
 
+export const getOutflows = (includes) => getProp(withIncludes("/outflows", includes), "outflows");
+export const getOutflow = (outflowId, includes) => get(withIncludes("/outflows/" + outflowId, includes));
+
 const request = (url, method, body = null, auth = "yes") => new Promise((resolve, reject) => {
     fetch(process.env.NEXT_PUBLIC_API_HOST + url, {
         method,
