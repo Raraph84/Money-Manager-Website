@@ -1,5 +1,8 @@
-export const login = (email, password) => postProp("/auth/login", { email, password }, "token", "no");
+export const login = (password) => postProp("/auth/login", { password }, "token", "no");
 export const logout = () => postNoContent("/auth/logout");
+
+export const getInflows = (includes) => getProp(withIncludes("/inflows", includes), "inflows");
+export const getInflow = (inflowId, includes) => get(withIncludes("/inflows/" + inflowId, includes));
 
 const request = (url, method, body = null, auth = "yes") => new Promise((resolve, reject) => {
     fetch(process.env.NEXT_PUBLIC_API_HOST + url, {
@@ -20,6 +23,9 @@ const requestJson = (...args) => new Promise((resolve, reject) => {
         res.json().then((res) => { delete res.code; resolve(res); }).catch((error) => reject(error.toString()));
     }).catch((error) => reject(error));
 });
+
+const get = (url, auth) => requestJson(url, "GET", null, auth);
+const getProp = (url, name, auth) => requestJson(url, "GET", null, auth).then((res) => res[name]);
 
 const postProp = (url, body, name, auth) => requestJson(url, "POST", body, auth).then((res) => res[name]);
 const postNoContent = (url, body, auth) => request(url, "POST", body, auth).then(() => undefined);

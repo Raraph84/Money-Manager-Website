@@ -1,10 +1,14 @@
-import Link from "next/link";
+import { Header } from "./layout/layout";
 
-import "./styles/globals.scss";
+import "./layout/globals.scss";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
-    template: "%s | Money Manager",
-    default: "Money Manager"
+    title: {
+        template: "%s | Money Manager",
+        default: "Money Manager"
+    }
 };
 
 export default ({ children }) => <html lang="fr">
@@ -13,13 +17,7 @@ export default ({ children }) => <html lang="fr">
     </head>
 
     <body>
-        <header>
-            <Link href="/inflows">Entrées</Link>
-            <Link href="/outflows">Sorties</Link>
-            <Link href="/businesses">Entreprises</Link>
-            <Link href="/people">Personnes</Link>
-        </header>
-
+        <Header />
         <main>{children}</main>
     </body>
 </html>;

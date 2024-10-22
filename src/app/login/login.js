@@ -1,0 +1,62 @@
+"use client";
+
+import { Component, createRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Loading, Info } from "../utils";
+import { login } from "../../api";
+
+class Login extends Component {
+
+    constructor(props) {
+
+        super(props);
+
+        this.passwordRef = createRef();
+
+        this.state = { requesting: false, info: null };
+    }
+
+    componentDidMount() {
+
+        if (localStorage.getItem("token"))
+            this.props.router.push(this.props.searchParams.get("redirectUrl") ?? "/");
+    }
+
+    render() {
+
+        const loginHandler = () => {
+
+            this.setState({ requesting: true, info: null });
+            login(this.passwordRef.current.value).then((token) => {
+                localStorage.setItem("token", token);
+                this.props.router.push(this.props.searchParams.get("redirectUrl") ?? "/dashboard");
+            }).catch((error) => {
+                if (error === "Too many fails")
+                    this.setState({ requesting: false, info: <Info>Trop d'essais de connexion, réessaye plus tard !</Info> });
+                else if (error === "Invalid password")
+                    this.setState({ requesting: false, info: <Info>Mot de passe invalide !</Info> }, () => this.passwordRef.current.focus());
+                else
+                    this.setState({ requesting: false, info: <Info>Un problème est survenu !</Info> });
+            });
+        };
+
+        return <div>
+
+            <div className="page-title">Connexion</div>
+
+            {this.state.requesting && <Loading />}
+            {this.state.info}
+
+            <div>
+                <div>Mot de passe</div>
+                <div><input type="password" disabled={this.state.requesting} ref={this.passwordRef}
+                    onKeyDown={(event) => event.key === "Enter" && loginHandler()} /></div>
+            </div>
+
+            <div><button onClick={loginHandler}>Connexion</button></div>
+
+        </div>;
+    }
+}
+
+export default (props) => <Login {...props} searchParams={useSearchParams()} router={useRouter()} />;
