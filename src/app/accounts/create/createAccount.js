@@ -2,8 +2,7 @@
 
 import { Component, createRef } from "react";
 import { useRouter } from "next/navigation";
-import { Loading, Info } from "../../../utils";
-import { createAccount } from "../../../api";
+import { Loading, CreateAccountForm } from "../../../utils";
 
 class CreateAccount extends Component {
 
@@ -11,7 +10,7 @@ class CreateAccount extends Component {
 
         super(props);
 
-        this.nameInputRef = createRef();
+        this.formRef = createRef();
 
         this.state = { requesting: false, info: null };
     }
@@ -19,16 +18,10 @@ class CreateAccount extends Component {
     render() {
 
         const createHandler = () => {
-
             this.setState({ requesting: true, info: null });
-            createAccount({ name: this.nameInputRef.current.value }).then((id) => {
-                this.props.router.push("/accounts");
-            }).catch((error) => {
-                if (error === "Name must be between 2 and 50 characters")
-                    this.setState({ requesting: false, info: <Info>Le nom doit contenir entre 2 et 50 caractères !</Info> }, () => this.nameInputRef.current.focus());
-                else
-                    this.setState({ requesting: false, info: <Info>Un problème est survenu !</Info> });
-            });
+            this.formRef.current.create()
+                .then(() => this.props.router.push("/accounts"))
+                .catch(({ info, cb }) => this.setState({ requesting: false, info }, cb));
         };
 
         return <div className="form-page">
@@ -38,9 +31,7 @@ class CreateAccount extends Component {
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            <div>Nom</div>
-            <input ref={this.nameInputRef} disabled={this.state.requesting} autoFocus
-                onKeyDown={(event) => event.key === "Enter" && createHandler()} />
+            <CreateAccountForm ref={this.formRef} disabled={this.state.requesting} autoFocus onEnter={createHandler} />
 
             <button disabled={this.state.requesting} onClick={createHandler}>Créer</button>
 
