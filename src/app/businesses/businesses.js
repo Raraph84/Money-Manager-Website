@@ -31,23 +31,25 @@ class Businesses extends Component {
     render() {
         return <div>
 
-            <div className="page-title">Personnes</div>
+            <div className="page-title">Entreprises</div>
 
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            {this.state.businesses && <table>
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.businesses.map((account) => <tr key={account.id}>
-                        <td>{account.name}</td>
-                    </tr>)}
-                </tbody>
-            </table>}
+            {this.state.businesses && <div className="table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.businesses.map((account) => <tr key={account.id}>
+                            <td>{account.name}</td>
+                        </tr>)}
+                    </tbody>
+                </table>
+            </div>}
 
         </div>;
     }

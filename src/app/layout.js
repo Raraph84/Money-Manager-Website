@@ -2,8 +2,6 @@ import { Header } from "./layout/layout";
 
 import "./layout/globals.scss";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
     title: {
         template: "%s | Money Manager",

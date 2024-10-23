@@ -31,25 +31,27 @@ class Accounts extends Component {
     render() {
         return <div>
 
-            <div className="page-title">Personnes</div>
+            <div className="page-title">Comptes</div>
 
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            {this.state.accounts && <table>
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Solde</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.accounts.map((account) => <tr key={account.id}>
-                        <td>{account.name}</td>
-                        <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(account.balance)}</td>
-                    </tr>)}
-                </tbody>
-            </table>}
+            {this.state.accounts && <div className="table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Solde</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.accounts.map((account) => <tr key={account.id}>
+                            <td>{account.name}</td>
+                            <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(account.balance)}</td>
+                        </tr>)}
+                    </tbody>
+                </table>
+            </div>}
 
         </div>;
     }

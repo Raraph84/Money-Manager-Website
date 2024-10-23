@@ -37,30 +37,32 @@ class Outflows extends Component {
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            {this.state.outflows && <table>
-                <thead>
-                    <tr>
-                        <th>Personne</th>
-                        <th>Compte</th>
-                        <th>Destination</th>
-                        <th>Montant</th>
-                        <th>Description</th>
-                        <th>Dates</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.outflows.map((outflow) => <tr key={outflow.id}>
-                        <td>{outflow.person.name}</td>
-                        <td>{outflow.account.name}</td>
-                        <td>{outflow.toBusiness.name}</td>
-                        <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(outflow.amount)}</td>
-                        <td>{outflow.description ?? "N/A"}</td>
-                        <td>{outflow.startDate ? `${moment(outflow.startDate).format("DD/MM/YYYY")} -> ${moment(outflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</td>
-                        <td>{moment(outflow.date).format("DD/MM/YYYY")}</td>
-                    </tr>)}
-                </tbody>
-            </table>}
+            {this.state.outflows && <div className="table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Personne</th>
+                            <th>Compte</th>
+                            <th>Destination</th>
+                            <th>Montant</th>
+                            <th>Description</th>
+                            <th>Dates</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.outflows.map((outflow) => <tr key={outflow.id}>
+                            <td>{outflow.person.name}</td>
+                            <td>{outflow.account.name}</td>
+                            <td>{outflow.toBusiness.name}</td>
+                            <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(outflow.amount)}</td>
+                            <td>{outflow.description ?? "N/A"}</td>
+                            <td>{outflow.startDate ? `${moment(outflow.startDate).format("DD/MM/YYYY")} -> ${moment(outflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</td>
+                            <td>{moment(outflow.date).format("DD/MM/YYYY")}</td>
+                        </tr>)}
+                    </tbody>
+                </table>
+            </div>}
 
         </div>;
     }

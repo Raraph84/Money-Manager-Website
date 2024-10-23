@@ -40,6 +40,8 @@ header {
     gap: 10px;
     margin-bottom: 20px;
     font-size: 20px;
+    overflow: auto;
+    white-space: nowrap;
 
     button {
         padding: 0;
@@ -73,6 +75,11 @@ input {
 .info {
     font-size: 20px;
     margin-bottom: 12px
+}
+
+.table {
+    overflow: auto;
+    white-space: nowrap;
 }
 
 table {

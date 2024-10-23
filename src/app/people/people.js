@@ -36,20 +36,22 @@ class People extends Component {
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            {this.state.people && <table>
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Solde</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.people.map((person) => <tr key={person.id}>
-                        <td>{person.name}</td>
-                        <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(person.balance)}</td>
-                    </tr>)}
-                </tbody>
-            </table>}
+            {this.state.people && <div className="table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Solde</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.people.map((person) => <tr key={person.id}>
+                            <td>{person.name}</td>
+                            <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(person.balance)}</td>
+                        </tr>)}
+                    </tbody>
+                </table>
+            </div>}
 
         </div>;
     }

@@ -37,24 +37,26 @@ class Flows extends Component {
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            {this.state.flows && <table>
-                <thead>
-                    <tr>
-                        <th>Source</th>
-                        <th>Destination</th>
-                        <th>Montant</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.state.flows.map((flow) => <tr key={flow.id}>
-                        <td>{flow.fromAccount ? flow.fromAccount.name : (flow.inflow.fromName ?? flow.inflow.fromBusiness.name)}</td>
-                        <td>{flow.toAccount ? flow.toAccount.name : flow.outflow.toBusiness.name}</td>
-                        <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(flow.amount)}</td>
-                        <td>{moment(flow.date).format("DD/MM/YYYY")}</td>
-                    </tr>)}
-                </tbody>
-            </table>}
+            {this.state.flows && <div className="table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Destination</th>
+                            <th>Montant</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.flows.map((flow) => <tr key={flow.id}>
+                            <td>{flow.fromAccount ? flow.fromAccount.name : (flow.inflow.fromName ?? flow.inflow.fromBusiness.name)}</td>
+                            <td>{flow.toAccount ? flow.toAccount.name : flow.outflow.toBusiness.name}</td>
+                            <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(flow.amount)}</td>
+                            <td>{moment(flow.date).format("DD/MM/YYYY")}</td>
+                        </tr>)}
+                    </tbody>
+                </table>
+            </div>}
 
         </div>;
     }
