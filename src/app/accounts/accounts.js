@@ -1,0 +1,58 @@
+"use client";
+
+import { Component } from "react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { Loading, Info } from "../utils";
+import { getAccounts } from "../../api";
+
+class Accounts extends Component {
+
+    constructor(props) {
+
+        super(props);
+
+        this.state = { requesting: false, info: null, accounts: null };
+    }
+
+    componentDidMount() {
+
+        this.setState({ requesting: true });
+        getAccounts().then((accounts) => {
+            this.setState({ requesting: false, accounts });
+        }).catch((error) => {
+            if (error === "Invalid token") {
+                localStorage.removeItem("token");
+                this.props.router.push("/login?" + new URLSearchParams([["redirectUrl", this.props.pathname + this.props.searchParams.toString()]]).toString());
+            } else
+                this.setState({ requesting: false, info: <Info>Un problème est survenu !</Info> });
+        });
+    }
+
+    render() {
+        return <div>
+
+            <div className="page-title">Personnes</div>
+
+            {this.state.requesting && <Loading />}
+            {this.state.info}
+
+            {this.state.accounts && <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Solde</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {this.state.accounts.map((account) => <tr key={account.id}>
+                        <td>{account.name}</td>
+                        <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(account.balance)}</td>
+                    </tr>)}
+                </tbody>
+            </table>}
+
+        </div>;
+    }
+}
+
+export default (props) => <Accounts {...props} pathname={usePathname()} searchParams={useSearchParams()} router={useRouter()} />;
