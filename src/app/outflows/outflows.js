@@ -32,10 +32,10 @@ class Outflows extends Component {
     render() {
         return <div>
 
+            <div className="page-title">Sorties</div>
+
             {this.state.requesting && <Loading />}
             {this.state.info}
-
-            <div className="page-title">Sorties</div>
 
             {this.state.outflows && <table>
                 <thead>

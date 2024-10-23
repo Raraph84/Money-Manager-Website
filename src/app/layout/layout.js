@@ -10,7 +10,7 @@ class HeaderClass extends Component {
 
         super(props);
 
-        this.state = { logged: false };
+        this.state = { logged: true };
     }
 
     componentDidMount() {
@@ -25,6 +25,7 @@ class HeaderClass extends Component {
     render() {
         if (!this.state.logged) return null;
         return <header>
+            <Link href="/">Accueil</Link>
             <Link href="/inflows">Entrées</Link>
             <Link href="/outflows">Sorties</Link>
             <Link href="/people">Personnes</Link>

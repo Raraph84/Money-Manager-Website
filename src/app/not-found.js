@@ -1,3 +1,3 @@
 export const metadata = { title: "Page introuvable" };
 
-export default () => <div>Page introuvable</div>;
+export default () => <div className="page-title">Page introuvable</div>;

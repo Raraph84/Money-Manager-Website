@@ -32,10 +32,10 @@ class Inflows extends Component {
     render() {
         return <div>
 
+            <div className="page-title">Entrées</div>
+
             {this.state.requesting && <Loading />}
             {this.state.info}
-
-            <div className="page-title">Entrées</div>
 
             {this.state.inflows && <table>
                 <thead>
