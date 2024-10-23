@@ -134,8 +134,9 @@ table {
 }
 
 .create-button {
-    display: inline-block;
     margin-bottom: 16px;
+    display: inline-block;
+    text-decoration: none;
     @extend button
 }
 

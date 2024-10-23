@@ -1,3 +1,7 @@
+import Home from "./home/home";
+
+import "./home/home.scss";
+
 export const metadata = { title: "Accueil | Money Manager" };
 
-export default () => <div className="page-title">Accueil</div>;
+export default () => <Home />;
