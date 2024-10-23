@@ -1,11 +1,23 @@
 export const login = (password) => postProp("/auth/login", { password }, "token", "no");
 export const logout = () => postNoContent("/auth/logout");
 
+export const getFlows = (includes) => getProp(withIncludes("/flows", includes), "flows");
+export const getFlow = (flowId, includes) => get(withIncludes("/flows/" + flowId, includes));
+
 export const getInflows = (includes) => getProp(withIncludes("/inflows", includes), "inflows");
 export const getInflow = (inflowId, includes) => get(withIncludes("/inflows/" + inflowId, includes));
 
 export const getOutflows = (includes) => getProp(withIncludes("/outflows", includes), "outflows");
 export const getOutflow = (outflowId, includes) => get(withIncludes("/outflows/" + outflowId, includes));
+
+export const getPeople = () => getProp("/people", "people");
+export const getPerson = (personId) => get("/people/" + personId);
+
+export const getAccounts = () => getProp("/accounts", "accounts");
+export const getAccount = (accountId) => get("/accounts/" + accountId);
+
+export const getBusinesses = () => getProp("/businesses", "businesses");
+export const getBusiness = (businessId) => get("/businesses/" + businessId);
 
 const request = (url, method, body = null, auth = "yes") => new Promise((resolve, reject) => {
     fetch(process.env.NEXT_PUBLIC_API_HOST + url, {

@@ -36,6 +36,7 @@ class HeaderClass extends Component {
 
         return <header>
             <Link href="/">Accueil</Link>
+            <Link href="/flows">Transactions</Link>
             <Link href="/inflows">Entrées</Link>
             <Link href="/outflows">Sorties</Link>
             <Link href="/people">Personnes</Link>
