@@ -2,7 +2,7 @@
 
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info } from "../utils";
+import { Loading, Info, LinkedTr } from "../utils";
 import { getInflows } from "../../api";
 import moment from "moment";
 
@@ -51,7 +51,7 @@ class Inflows extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.inflows.map((inflow) => <tr key={inflow.id}>
+                        {this.state.inflows.map((inflow) => <LinkedTr key={inflow.id} href={"/inflows/" + inflow.id}>
                             <td>{inflow.person.name}</td>
                             <td>{inflow.account.name}</td>
                             <td>{inflow.fromName ?? inflow.fromBusiness.name}</td>
@@ -59,7 +59,7 @@ class Inflows extends Component {
                             <td>{inflow.description ?? "N/A"}</td>
                             <td>{inflow.startDate ? `${moment(inflow.startDate).format("DD/MM/YYYY")} -> ${moment(inflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</td>
                             <td>{moment(inflow.date).format("DD/MM/YYYY")}</td>
-                        </tr>)}
+                        </LinkedTr>)}
                     </tbody>
                 </table>
             </div>}

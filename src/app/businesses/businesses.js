@@ -2,7 +2,7 @@
 
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info } from "../utils";
+import { Loading, Info, LinkedTr } from "../utils";
 import { getBusinesses } from "../../api";
 
 class Businesses extends Component {
@@ -44,9 +44,9 @@ class Businesses extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.businesses.map((account) => <tr key={account.id}>
-                            <td>{account.name}</td>
-                        </tr>)}
+                        {this.state.businesses.map((business) => <LinkedTr key={business.id} href={"/businesses/" + business.id}>
+                            <td>{business.name}</td>
+                        </LinkedTr>)}
                     </tbody>
                 </table>
             </div>}

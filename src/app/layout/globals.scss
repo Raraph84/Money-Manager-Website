@@ -28,8 +28,10 @@ a {
 }
 
 body {
+    --dark-blue: #152A38;
+    --light-blue: #29435C;
     margin: 20px;
-    background-color: #152A38;
+    background-color: var(--dark-blue);
     font-family: "Chillax", sans-serif;
     font-weight: 500;
     color: white;
@@ -87,7 +89,30 @@ table {
 
     th,
     td {
-        padding: 4px 8px;
+        padding: 6px 8px;
         border: 1px solid;
+
+        &:has(a) {
+            padding: 0;
+
+            a {
+                display: block;
+                padding: 6px 8px;
+            }
+
+            &:hover {
+                background-color: var(--light-blue);
+            }
+        }
+    }
+
+    .linked {
+        &:hover td {
+            background-color: var(--light-blue);
+        }
+
+        a {
+            text-decoration: none;
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info } from "../utils";
+import { Loading, Info, LinkedTr } from "../utils";
 import { getFlows } from "../../api";
 import moment from "moment";
 
@@ -48,12 +48,12 @@ class Flows extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.flows.map((flow) => <tr key={flow.id}>
+                        {this.state.flows.map((flow) => <LinkedTr key={flow.id} href={"/flows/" + flow.id}>
                             <td>{flow.fromAccount ? flow.fromAccount.name : (flow.inflow.fromName ?? flow.inflow.fromBusiness.name)}</td>
                             <td>{flow.toAccount ? flow.toAccount.name : flow.outflow.toBusiness.name}</td>
                             <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(flow.amount)}</td>
                             <td>{moment(flow.date).format("DD/MM/YYYY")}</td>
-                        </tr>)}
+                        </LinkedTr>)}
                     </tbody>
                 </table>
             </div>}

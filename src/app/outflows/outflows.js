@@ -2,7 +2,7 @@
 
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info } from "../utils";
+import { Loading, Info, LinkedTr } from "../utils";
 import { getOutflows } from "../../api";
 import moment from "moment";
 
@@ -51,7 +51,7 @@ class Outflows extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.outflows.map((outflow) => <tr key={outflow.id}>
+                        {this.state.outflows.map((outflow) => <LinkedTr key={outflow.id} href={"/outflows/" + outflow.id}>
                             <td>{outflow.person.name}</td>
                             <td>{outflow.account.name}</td>
                             <td>{outflow.toBusiness.name}</td>
@@ -59,7 +59,7 @@ class Outflows extends Component {
                             <td>{outflow.description ?? "N/A"}</td>
                             <td>{outflow.startDate ? `${moment(outflow.startDate).format("DD/MM/YYYY")} -> ${moment(outflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</td>
                             <td>{moment(outflow.date).format("DD/MM/YYYY")}</td>
-                        </tr>)}
+                        </LinkedTr>)}
                     </tbody>
                 </table>
             </div>}

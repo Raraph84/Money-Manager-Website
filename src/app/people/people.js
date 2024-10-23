@@ -2,7 +2,7 @@
 
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info } from "../utils";
+import { Loading, Info, LinkedTr } from "../utils";
 import { getPeople } from "../../api";
 
 class People extends Component {
@@ -45,10 +45,10 @@ class People extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.people.map((person) => <tr key={person.id}>
+                        {this.state.people.map((person) => <LinkedTr key={person.id} href={"/people/" + person.id}>
                             <td>{person.name}</td>
                             <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(person.balance)}</td>
-                        </tr>)}
+                        </LinkedTr>)}
                     </tbody>
                 </table>
             </div>}
