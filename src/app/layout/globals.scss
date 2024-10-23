@@ -50,6 +50,12 @@ header {
         border: none;
         text-decoration: underline;
     }
+
+    button:hover,
+    a:hover {
+        background-color: transparent;
+        text-decoration: none;
+    }
 }
 
 a {
@@ -60,6 +66,10 @@ button {
     padding: 4px 8px;
     border: 1px solid;
     border-radius: 5px;
+
+    &:hover {
+        background-color: var(--light-blue);
+    }
 }
 
 input {
@@ -115,4 +125,10 @@ table {
             text-decoration: none;
         }
     }
+}
+
+.create-button {
+    display: inline-block;
+    margin-bottom: 16px;
+    @extend button
 }

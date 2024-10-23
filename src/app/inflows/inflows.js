@@ -2,8 +2,9 @@
 
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info, LinkedTr } from "../utils";
+import { Loading, Info, LinkedTr } from "../../utils";
 import { getInflows } from "../../api";
+import Link from "next/link";
 import moment from "moment";
 
 class Inflows extends Component {
@@ -36,6 +37,8 @@ class Inflows extends Component {
 
             {this.state.requesting && <Loading />}
             {this.state.info}
+
+            <Link href="/inflows/create" className="create-button">Créer une entrée</Link>
 
             {this.state.inflows && <div className="table">
                 <table>

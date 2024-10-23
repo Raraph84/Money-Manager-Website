@@ -2,7 +2,7 @@
 
 import { Component, createRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info } from "../utils";
+import { Loading, Info } from "../../utils";
 import { login } from "../../api";
 
 class Login extends Component {

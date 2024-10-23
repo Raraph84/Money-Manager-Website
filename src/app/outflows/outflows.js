@@ -2,8 +2,9 @@
 
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info, LinkedTr } from "../utils";
+import { Loading, Info, LinkedTr } from "../../utils";
 import { getOutflows } from "../../api";
+import Link from "next/link";
 import moment from "moment";
 
 class Outflows extends Component {
@@ -36,6 +37,8 @@ class Outflows extends Component {
 
             {this.state.requesting && <Loading />}
             {this.state.info}
+
+            <Link href="/outflows/create" className="create-button">Créer une sortie</Link>
 
             {this.state.outflows && <div className="table">
                 <table>

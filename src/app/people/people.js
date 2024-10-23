@@ -2,8 +2,9 @@
 
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info, LinkedTr } from "../utils";
+import { Loading, Info, LinkedTr } from "../../utils";
 import { getPeople } from "../../api";
+import Link from "next/link";
 
 class People extends Component {
 
@@ -35,6 +36,8 @@ class People extends Component {
 
             {this.state.requesting && <Loading />}
             {this.state.info}
+
+            <Link href="/people/create" className="create-button">Créer une personne</Link>
 
             {this.state.people && <div className="table">
                 <table>

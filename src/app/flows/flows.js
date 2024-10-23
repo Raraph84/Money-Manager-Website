@@ -2,8 +2,9 @@
 
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info, LinkedTr } from "../utils";
+import { Loading, Info, LinkedTr } from "../../utils";
 import { getFlows } from "../../api";
+import Link from "next/link";
 import moment from "moment";
 
 class Flows extends Component {
@@ -36,6 +37,8 @@ class Flows extends Component {
 
             {this.state.requesting && <Loading />}
             {this.state.info}
+
+            <Link href="/flows/create" className="create-button">Créer une transaction</Link>
 
             {this.state.flows && <div className="table">
                 <table>

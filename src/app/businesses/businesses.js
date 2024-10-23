@@ -2,8 +2,9 @@
 
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Loading, Info, LinkedTr } from "../utils";
+import { Loading, Info, LinkedTr } from "../../utils";
 import { getBusinesses } from "../../api";
+import Link from "next/link";
 
 class Businesses extends Component {
 
@@ -35,6 +36,8 @@ class Businesses extends Component {
 
             {this.state.requesting && <Loading />}
             {this.state.info}
+
+            <Link href="/businesses/create" className="create-button">Créer une entreprise</Link>
 
             {this.state.businesses && <div className="table">
                 <table>
