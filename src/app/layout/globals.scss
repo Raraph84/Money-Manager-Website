@@ -1,4 +1,4 @@
-@import url("https://api.fontshare.com/v2/css?f[]=chillax@500&display=swap");
+@import url("https://api.fontshare.com/v2/css?f[]=chillax");
 
 * {
     margin: 0;
@@ -40,10 +40,28 @@ header {
     gap: 10px;
     margin-bottom: 20px;
     font-size: 20px;
+
+    button {
+        padding: 0;
+        border: none;
+        text-decoration: underline;
+    }
 }
 
 a {
     text-decoration: underline;
+}
+
+button {
+    padding: 4px 8px;
+    border: 1px solid;
+    border-radius: 5px;
+}
+
+input {
+    padding: 4px 8px;
+    border: 1px solid;
+    border-radius: 5px;
 }
 
 .page-title {
@@ -55,4 +73,14 @@ a {
 .info {
     font-size: 20px;
     margin-bottom: 12px
+}
+
+table {
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: 4px 8px;
+        border: 1px solid;
+    }
 }

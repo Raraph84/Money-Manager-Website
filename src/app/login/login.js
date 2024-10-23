@@ -29,7 +29,7 @@ class Login extends Component {
             this.setState({ requesting: true, info: null });
             login(this.passwordRef.current.value).then((token) => {
                 localStorage.setItem("token", token);
-                this.props.router.push(this.props.searchParams.get("redirectUrl") ?? "/dashboard");
+                this.props.router.push(this.props.searchParams.get("redirectUrl") ?? "/");
             }).catch((error) => {
                 if (error === "Too many fails")
                     this.setState({ requesting: false, info: <Info>Trop d'essais de connexion, réessaye plus tard !</Info> });
@@ -40,20 +40,17 @@ class Login extends Component {
             });
         };
 
-        return <div>
+        return <div className="login-page">
 
             <div className="page-title">Connexion</div>
 
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            <div>
-                <div>Mot de passe</div>
-                <div><input type="password" disabled={this.state.requesting} ref={this.passwordRef}
-                    onKeyDown={(event) => event.key === "Enter" && loginHandler()} /></div>
-            </div>
-
-            <div><button onClick={loginHandler}>Connexion</button></div>
+            <div>Mot de passe</div>
+            <input ref={this.passwordRef} type="password" disabled={this.state.requesting} autoFocus
+                onKeyDown={(event) => event.key === "Enter" && loginHandler()} />
+            <button onClick={loginHandler}>Connexion</button>
 
         </div>;
     }

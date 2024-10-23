@@ -1,7 +1,8 @@
 "use client";
 
 import { Component } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { logout } from "../../api";
 import Link from "next/link";
 
 class HeaderClass extends Component {
@@ -23,7 +24,16 @@ class HeaderClass extends Component {
     }
 
     render() {
+
         if (!this.state.logged) return null;
+
+        const logoutHandler = () => {
+            logout().then(() => {
+                localStorage.removeItem("token");
+                this.props.router.push("/login");
+            }).catch(() => { });
+        };
+
         return <header>
             <Link href="/">Accueil</Link>
             <Link href="/inflows">Entrées</Link>
@@ -31,8 +41,9 @@ class HeaderClass extends Component {
             <Link href="/people">Personnes</Link>
             <Link href="/accounts">Comptes</Link>
             <Link href="/businesses">Entreprises</Link>
+            <button onClick={logoutHandler}>Se déconnecter</button>
         </header>;
     }
 }
 
-export const Header = (props) => <HeaderClass {...props} pathname={usePathname()} />;
+export const Header = (props) => <HeaderClass {...props} pathname={usePathname()} router={useRouter()} />;
