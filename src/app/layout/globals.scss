@@ -18,7 +18,7 @@ input {
     outline: none;
 }
 
-button {
+button:not(:disabled) {
     cursor: pointer;
 }
 
@@ -39,22 +39,28 @@ body {
 
 header {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    margin: -10px -5px;
+    margin-bottom: 10px;
     font-size: 20px;
     overflow: auto;
     white-space: nowrap;
 
+    a,
     button {
-        padding: 0;
-        border: none;
-        text-decoration: underline;
+        padding: 10px 5px;
+
+        &:hover {
+            text-decoration: none;
+        }
     }
 
-    button:hover,
-    a:hover {
-        background-color: transparent;
-        text-decoration: none;
+    button {
+        border: none;
+        text-decoration: underline;
+
+        &:hover:not(:disabled) {
+            background-color: transparent;
+        }
     }
 }
 
@@ -67,7 +73,7 @@ button {
     border: 1px solid;
     border-radius: 5px;
 
-    &:hover {
+    &:hover:not(:disabled) {
         background-color: var(--light-blue);
     }
 }
@@ -131,4 +137,15 @@ table {
     display: inline-block;
     margin-bottom: 16px;
     @extend button
+}
+
+.form-page {
+    input {
+        margin-top: 4px;
+        margin-bottom: 12px;
+    }
+
+    button {
+        display: block;
+    }
 }

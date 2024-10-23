@@ -1,21 +1,27 @@
 export const login = (password) => postProp("/auth/login", { password }, "token", "no");
 export const logout = () => postNoContent("/auth/logout");
 
+export const createFlow = (flow) => postProp("/flows", flow, "id");
 export const getFlows = (includes) => getProp(withIncludes("/flows", includes), "flows");
 export const getFlow = (flowId, includes) => get(withIncludes("/flows/" + flowId, includes));
 
+export const createInflow = (inflow) => postProp("/inflows", inflow, "id");
 export const getInflows = (includes) => getProp(withIncludes("/inflows", includes), "inflows");
 export const getInflow = (inflowId, includes) => get(withIncludes("/inflows/" + inflowId, includes));
 
+export const createOutflow = (outflow) => postProp("/outflows", outflow, "id");
 export const getOutflows = (includes) => getProp(withIncludes("/outflows", includes), "outflows");
 export const getOutflow = (outflowId, includes) => get(withIncludes("/outflows/" + outflowId, includes));
 
+export const createPerson = (person) => postProp("/people", person, "id");
 export const getPeople = () => getProp("/people", "people");
 export const getPerson = (personId) => get("/people/" + personId);
 
+export const createAccount = (account) => postProp("/accounts", account, "id");
 export const getAccounts = () => getProp("/accounts", "accounts");
 export const getAccount = (accountId) => get("/accounts/" + accountId);
 
+export const createBusiness = (business) => postProp("/businesses", business, "id");
 export const getBusinesses = () => getProp("/businesses", "businesses");
 export const getBusiness = (businessId) => get("/businesses/" + businessId);
 

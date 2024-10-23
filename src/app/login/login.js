@@ -40,7 +40,7 @@ class Login extends Component {
             });
         };
 
-        return <div className="login-page">
+        return <div className="form-page">
 
             <div className="page-title">Connexion</div>
 
@@ -50,7 +50,8 @@ class Login extends Component {
             <div>Mot de passe</div>
             <input ref={this.passwordRef} type="password" disabled={this.state.requesting} autoFocus
                 onKeyDown={(event) => event.key === "Enter" && loginHandler()} />
-            <button onClick={loginHandler}>Connexion</button>
+
+            <button disabled={this.state.requesting} onClick={loginHandler}>Connexion</button>
 
         </div>;
     }
