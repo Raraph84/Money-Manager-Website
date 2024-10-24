@@ -63,6 +63,14 @@ header {
     }
 }
 
+main {
+    width: max-content;
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
+}
+
 a {
     text-decoration: underline;
 }
@@ -100,6 +108,7 @@ input {
 }
 
 table {
+    width: 100%;
     border-collapse: collapse;
 
     th,
@@ -152,7 +161,6 @@ table {
 
 .form {
     min-width: 25vw;
-    width: max-content;
 
     .choose-title {
         font-size: 20px;
@@ -224,9 +232,5 @@ table {
     &>button {
         width: 100%;
         margin-top: 8px;
-    }
-
-    @media screen and (max-width: 768px) {
-        width: auto;
     }
 }

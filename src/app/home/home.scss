@@ -1,5 +1,4 @@
 .home-page {
-    width: max-content;
     display: flex;
     flex-direction: column;
 
@@ -32,8 +31,7 @@
         }
     }
 
-    @media screen and (max-width: 480px) {
-        width: 100%;
+    @media screen and (max-width: 768px) {
         align-items: center;
     }
 }
