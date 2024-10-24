@@ -68,9 +68,9 @@ a {
 }
 
 button {
-    padding: 4px 8px;
+    padding: 8px 12px;
     border: 1px solid;
-    border-radius: 5px;
+    border-radius: 8px;
 
     &:hover:not(:disabled) {
         background-color: var(--light-blue);
@@ -78,9 +78,9 @@ button {
 }
 
 input {
-    padding: 4px 8px;
+    padding: 8px;
     border: 1px solid;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 .page-title {
@@ -147,5 +147,50 @@ table {
 
     button {
         display: block;
+    }
+}
+
+.form {
+    width: max-content;
+
+    .choose-title {
+        font-size: 20px;
+    }
+
+    .choose-list {
+        display: flex;
+        flex-direction: column;
+        margin: 12px 0;
+        border-radius: 9px;
+        border: 1px solid;
+        max-height: 25vh;
+        overflow-y: auto;
+
+        button {
+            border: none;
+            border-bottom: 1px solid;
+            border-radius: 0;
+
+            &.selected {
+                background-color: var(--light-blue);
+            }
+
+            &:first-child {
+                border-radius: 8px 8px 0 0;
+            }
+
+            &:last-child {
+                border-bottom: none;
+                border-radius: 0 0 8px 8px;
+            }
+        }
+    }
+
+    input {
+        width: 100%;
+    }
+
+    @media screen and (max-width: 768px) {
+        width: auto;
     }
 }
