@@ -2,9 +2,9 @@
 
 import { Component, createRef } from "react";
 import { useRouter } from "next/navigation";
-import { Loading, CreateInflowForm } from "../../../utils";
+import { Loading, CreateOutflowForm } from "../../../utils";
 
-class CreateInflow extends Component {
+class CreateOutflow extends Component {
 
     constructor(props) {
 
@@ -20,19 +20,19 @@ class CreateInflow extends Component {
         const createHandler = () => {
             this.setState({ requesting: true, info: null });
             this.formRef.current.create()
-                .then(() => this.props.router.push("/inflows"))
+                .then(() => this.props.router.push("/outflows"))
                 .catch(({ info, cb }) => this.setState({ requesting: false, info }, cb));
         };
 
         return <div className="form-page">
 
-            <div className="page-title">Créer une entrée</div>
+            <div className="page-title">Créer une sortie</div>
 
             {this.state.requesting && <Loading />}
             {this.state.info}
 
             <div className="form">
-                <CreateInflowForm ref={this.formRef} disabled={this.state.requesting} autoFocus onEnter={createHandler} />
+                <CreateOutflowForm ref={this.formRef} disabled={this.state.requesting} autoFocus onEnter={createHandler} />
                 <button disabled={this.state.requesting} onClick={createHandler}>Créer</button>
             </div>
 
@@ -40,4 +40,4 @@ class CreateInflow extends Component {
     }
 }
 
-export default (props) => <CreateInflow {...props} router={useRouter()} />;
+export default (props) => <CreateOutflow {...props} router={useRouter()} />;

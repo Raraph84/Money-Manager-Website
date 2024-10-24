@@ -151,6 +151,7 @@ table {
 }
 
 .form {
+    min-width: 25vw;
     width: max-content;
 
     .choose-title {
@@ -186,8 +187,43 @@ table {
         }
     }
 
+    .choose-list-horizontal {
+        display: flex;
+        flex-direction: row;
+        margin: 12px 0;
+        border-radius: 9px;
+        border: 1px solid;
+        max-height: 25vh;
+        overflow-y: auto;
+
+        button {
+            flex: 1;
+            border: none;
+            border-right: 1px solid;
+            border-radius: 0;
+
+            &.selected {
+                background-color: var(--light-blue);
+            }
+
+            &:first-child {
+                border-radius: 8px 0 0 8px;
+            }
+
+            &:last-child {
+                border-right: none;
+                border-radius: 0 8px 8px 0;
+            }
+        }
+    }
+
     input {
         width: 100%;
+    }
+
+    &>button {
+        width: 100%;
+        margin-top: 8px;
     }
 
     @media screen and (max-width: 768px) {

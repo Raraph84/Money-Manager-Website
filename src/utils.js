@@ -1,5 +1,5 @@
 import { Component, createRef } from "react";
-import { createPerson, createAccount, createBusiness, getPeople, getAccounts, createInflow, getBusinesses } from "./api";
+import { createPerson, createAccount, createBusiness, getPeople, getAccounts, getBusinesses, createInflow, createOutflow } from "./api";
 import Link from "next/link";
 
 export const Loading = () => {
@@ -163,8 +163,8 @@ export class CreateInflowForm extends Component {
 
             <ChooseAccountForm ref={this.accountFormRef} disabled={this.props.disabled} onEnter={() => { }} />
 
-            <div>Source</div>
-            <div className="choose-list">
+            <div className="choose-title">Source</div>
+            <div className="choose-list-horizontal">
                 <button disabled={this.props.disabled} className={this.state.fromBusiness ? "" : "selected"} onClick={() => this.setState({ fromBusiness: false })}>Nom</button>
                 <button disabled={this.props.disabled} className={this.state.fromBusiness ? "selected" : ""} onClick={() => this.setState({ fromBusiness: true })}>Entreprise</button>
             </div>
@@ -172,6 +172,99 @@ export class CreateInflowForm extends Component {
             {this.state.fromBusiness ? <ChooseBusinessForm ref={this.fromBusinessFormRef} disabled={this.props.disabled} onEnter={() => this.amountInputRef.current.focus()} /> : <>
                 <div>Nom</div>
                 <input ref={this.fromNameInputRef} disabled={this.props.disabled} autoFocus
+                    onKeyDown={(event) => event.key === "Enter" && this.amountInputRef.current.focus()} />
+            </>}
+
+            <div>Montant</div>
+            <input ref={this.amountInputRef} disabled={this.props.disabled}
+                onKeyDown={(event) => event.key === "Enter" && this.descriptionInputRef.current.focus()}
+                onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
+                onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
+
+            <div>Description</div>
+            <input ref={this.descriptionInputRef} disabled={this.props.disabled}
+                onKeyDown={(event) => event.key === "Enter" && this.startDateInputRef.current.focus()} />
+
+            <div>Date de début</div>
+            <input ref={this.startDateInputRef} type="date" disabled={this.props.disabled}
+                onKeyDown={(event) => event.key === "Enter" && this.endDateInputRef.current.focus()} />
+
+            <div>Date de fin</div>
+            <input ref={this.endDateInputRef} type="date" disabled={this.props.disabled}
+                onKeyDown={(event) => event.key === "Enter" && this.dateInputRef.current.focus()} />
+
+            <div>Date</div>
+            <input ref={this.dateInputRef} type="datetime-local" disabled={this.props.disabled} defaultValue={new Date().toISOString().slice(0, 16)}
+                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter()} />
+
+        </>;
+    }
+}
+
+export class CreateOutflowForm extends Component {
+
+    constructor(props) {
+
+        super(props);
+
+        this.personFormRef = createRef();
+        this.accountFormRef = createRef();
+        this.toNameInputRef = createRef();
+        this.toBusinessFormRef = createRef();
+        this.amountInputRef = createRef();
+        this.descriptionInputRef = createRef();
+        this.startDateInputRef = createRef();
+        this.endDateInputRef = createRef();
+        this.dateInputRef = createRef();
+
+        this.state = { toBusiness: true };
+    }
+
+    async create() {
+
+        const inflow = {};
+
+        inflow.person = await this.personFormRef.current.choose();
+        inflow.account = await this.accountFormRef.current.choose();
+        if (this.state.toBusiness) inflow.toBusiness = await this.toBusinessFormRef.current.choose();
+        else inflow.toName = this.toNameInputRef.current.value;
+        inflow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
+        inflow.description = this.descriptionInputRef.current.value || null;
+        inflow.startDate = this.startDateInputRef.current.value ? new Date(this.startDateInputRef.current.value).getTime() : null;
+        inflow.endDate = this.endDateInputRef.current.value ? new Date(this.endDateInputRef.current.value).getTime() : null;
+        inflow.date = new Date(this.dateInputRef.current.value).getTime();
+
+        if (isNaN(inflow.amount)) throw { info: <Info>Le montant doit être un nombre !</Info>, cb: () => this.amountInputRef.current.focus() };
+        if (!this.dateInputRef.current.value) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
+
+        try {
+            return await createOutflow(inflow);
+        } catch (error) {
+            if (error === "To name must be between 2 and 50 characters")
+                throw { info: <Info>Le nom de la destination doit contenir entre 2 et 50 caractères !</Info>, cb: () => this.toNameInputRef.current.focus() };
+            else if (error === "Description must be between 2 and 100 characters")
+                throw { info: <Info>La description doit contenir entre 2 et 100 caractères !</Info>, cb: () => this.descriptionInputRef.current.focus() };
+            else
+                throw { info: <Info>Un problème est survenu !</Info> };
+        }
+    }
+
+    render() {
+        return <>
+
+            <ChoosePersonForm ref={this.personFormRef} disabled={this.props.disabled} onEnter={() => { }} />
+
+            <ChooseAccountForm ref={this.accountFormRef} disabled={this.props.disabled} onEnter={() => { }} />
+
+            <div className="choose-title">Destination</div>
+            <div className="choose-list-horizontal">
+                <button disabled={this.props.disabled} className={this.state.toBusiness ? "" : "selected"} onClick={() => this.setState({ toBusiness: false })}>Nom</button>
+                <button disabled={this.props.disabled} className={this.state.toBusiness ? "selected" : ""} onClick={() => this.setState({ toBusiness: true })}>Entreprise</button>
+            </div>
+
+            {this.state.toBusiness ? <ChooseBusinessForm ref={this.toBusinessFormRef} disabled={this.props.disabled} onEnter={() => this.amountInputRef.current.focus()} /> : <>
+                <div>Nom</div>
+                <input ref={this.toNameInputRef} disabled={this.props.disabled} autoFocus
                     onKeyDown={(event) => event.key === "Enter" && this.amountInputRef.current.focus()} />
             </>}
 
