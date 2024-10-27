@@ -28,6 +28,7 @@ class HeaderClass extends Component {
         if (!this.state.logged) return null;
 
         const logoutHandler = () => {
+            if (!confirm("Voulez-vous vraiment vous déconnecter ?")) return;
             logout().then(() => {
                 localStorage.removeItem("token");
                 this.props.router.push("/login");
