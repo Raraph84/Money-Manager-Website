@@ -24,7 +24,7 @@ class CreateFlow extends Component {
                 .catch(({ info, cb }) => this.setState({ requesting: false, info }, cb));
         };
 
-        return <div className="form-page">
+        return <div>
 
             <div className="page-title">Créer une transaction</div>
 

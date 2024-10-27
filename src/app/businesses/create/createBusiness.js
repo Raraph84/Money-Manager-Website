@@ -24,16 +24,17 @@ class CreateBusiness extends Component {
                 .catch(({ info, cb }) => this.setState({ requesting: false, info }, cb));
         };
 
-        return <div className="form-page">
+        return <div>
 
             <div className="page-title">Créer une enterprise</div>
 
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            <CreateBusinessForm ref={this.formRef} disabled={this.state.requesting} autoFocus onEnter={createHandler} />
-
-            <button disabled={this.state.requesting} onClick={createHandler}>Créer</button>
+            <div className="form">
+                <CreateBusinessForm ref={this.formRef} disabled={this.state.requesting} autoFocus onEnter={createHandler} />
+                <button disabled={this.state.requesting} onClick={createHandler}>Créer</button>
+            </div>
 
         </div>;
     }

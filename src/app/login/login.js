@@ -40,18 +40,22 @@ class Login extends Component {
             });
         };
 
-        return <div className="form-page">
+        return <div>
 
             <div className="page-title">Connexion</div>
 
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            <div>Mot de passe</div>
-            <input ref={this.passwordRef} type="password" disabled={this.state.requesting} autoFocus
-                onKeyDown={(event) => event.key === "Enter" && loginHandler()} />
+            <div className="form">
 
-            <button disabled={this.state.requesting} onClick={loginHandler}>Connexion</button>
+                <div>Mot de passe</div>
+                <input ref={this.passwordRef} type="password" disabled={this.state.requesting} autoFocus
+                    onKeyDown={(event) => event.key === "Enter" && loginHandler()} />
+
+                <button disabled={this.state.requesting} onClick={loginHandler}>Connexion</button>
+
+            </div>
 
         </div>;
     }

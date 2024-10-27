@@ -148,17 +148,6 @@ table {
     @extend button
 }
 
-.form-page {
-    input {
-        margin-top: 4px;
-        margin-bottom: 12px;
-    }
-
-    button {
-        display: block;
-    }
-}
-
 .form {
     min-width: 25vw;
 
@@ -227,6 +216,8 @@ table {
 
     input {
         width: 100%;
+        margin-top: 4px;
+        margin-bottom: 12px;
     }
 
     &>button {

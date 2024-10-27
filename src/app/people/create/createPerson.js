@@ -24,16 +24,17 @@ class CreatePerson extends Component {
                 .catch(({ info, cb }) => this.setState({ requesting: false, info }, cb));
         };
 
-        return <div className="form-page">
+        return <div>
 
             <div className="page-title">Créer une personne</div>
 
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            <CreatePersonForm ref={this.formRef} disabled={this.state.requesting} autoFocus onEnter={createHandler} />
-
-            <button disabled={this.state.requesting} onClick={createHandler}>Créer</button>
+            <div className="form">
+                <CreatePersonForm ref={this.formRef} disabled={this.state.requesting} autoFocus onEnter={createHandler} />
+                <button disabled={this.state.requesting} onClick={createHandler}>Créer</button>
+            </div>
 
         </div>;
     }
