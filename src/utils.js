@@ -1,5 +1,5 @@
 import { Component, createRef } from "react";
-import { createPerson, createAccount, createBusiness, getPeople, getAccounts, getBusinesses, createInflow, createOutflow } from "./api";
+import { createPerson, createAccount, createBusiness, getPeople, getAccounts, getBusinesses, createInflow, createOutflow, createFlow } from "./api";
 import Link from "next/link";
 
 export const Loading = () => {
@@ -102,11 +102,11 @@ class ChooseForm extends Component {
     }
 }
 
-export const ChoosePersonForm = (props) => <ChooseForm {...props} name="Personne" getOptions={getPeople} getForm={(props) => <CreatePersonForm {...props} />} />;
+export const ChoosePersonForm = (props) => <ChooseForm name="Personne" getOptions={getPeople} getForm={(props) => <CreatePersonForm {...props} />} {...props} />;
 
-export const ChooseAccountForm = (props) => <ChooseForm {...props} name="Compte" getOptions={getAccounts} getForm={(props) => <CreateAccountForm {...props} />} />;
+export const ChooseAccountForm = (props) => <ChooseForm name="Compte" getOptions={getAccounts} getForm={(props) => <CreateAccountForm {...props} />} {...props} />;
 
-export const ChooseBusinessForm = (props) => <ChooseForm {...props} name="Entreprise" getOptions={getBusinesses} getForm={(props) => <CreateBusinessForm {...props} />} />;
+export const ChooseBusinessForm = (props) => <ChooseForm name="Entreprise" getOptions={getBusinesses} getForm={(props) => <CreateBusinessForm {...props} />} {...props} />;
 
 export class CreateInflowForm extends Component {
 
@@ -285,6 +285,61 @@ export class CreateOutflowForm extends Component {
             <div>Date de fin</div>
             <input ref={this.endDateInputRef} type="date" disabled={this.props.disabled}
                 onKeyDown={(event) => event.key === "Enter" && this.dateInputRef.current.focus()} />
+
+            <div>Date</div>
+            <input ref={this.dateInputRef} type="datetime-local" disabled={this.props.disabled} defaultValue={new Date().toISOString().slice(0, 16)}
+                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter()} />
+
+        </>;
+    }
+}
+
+export class CreateFlowForm extends Component {
+
+    constructor(props) {
+
+        super(props);
+
+        this.fromAccountFormRef = createRef();
+        this.toAccountFormRef = createRef();
+        this.amountInputRef = createRef();
+        this.dateInputRef = createRef();
+    }
+
+    async create() {
+
+        const flow = {};
+
+        flow.fromAccount = await this.fromAccountFormRef.current.choose();
+        flow.toAccount = await this.toAccountFormRef.current.choose();
+        flow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
+        flow.date = new Date(this.dateInputRef.current.value).getTime();
+
+        if (isNaN(flow.amount)) throw { info: <Info>Le montant doit être un nombre !</Info>, cb: () => this.amountInputRef.current.focus() };
+        if (!this.dateInputRef.current.value) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
+
+        try {
+            return await createFlow(flow);
+        } catch (error) {
+            if (error === "From and to accounts must be different")
+                throw { info: <Info>Les comptes source et destination doivent être différents !</Info>, cb: () => this.toAccountFormRef.current.choose() };
+            else
+                throw { info: <Info>Un problème est survenu !</Info> };
+        }
+    }
+
+    render() {
+        return <>
+
+            <ChooseAccountForm ref={this.fromAccountFormRef} name="Compte source" disabled={this.props.disabled} onEnter={() => { }} />
+
+            <ChooseAccountForm ref={this.toAccountFormRef} name="Compte destination" disabled={this.props.disabled} onEnter={() => this.amountInputRef.current.focus()} />
+
+            <div>Montant</div>
+            <input ref={this.amountInputRef} disabled={this.props.disabled}
+                onKeyDown={(event) => event.key === "Enter" && this.dateInputRef.current.focus()}
+                onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
+                onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
 
             <div>Date</div>
             <input ref={this.dateInputRef} type="datetime-local" disabled={this.props.disabled} defaultValue={new Date().toISOString().slice(0, 16)}
