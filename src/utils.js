@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const Loading = () => {
     window.scrollTo(0, 0);
-    return <div className="loading">Chargement...</div>;
+    return <div className="loading"><i className="fa-solid fa-spinner" /></div>;
 };
 
 export const Info = ({ children }) => {

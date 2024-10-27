@@ -1,5 +1,15 @@
 @import url("https://api.fontshare.com/v2/css?f[]=chillax");
 
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -99,7 +109,12 @@ input {
 .loading,
 .info {
     font-size: 20px;
-    margin-bottom: 12px
+    margin-bottom: 12px;
+
+    i {
+        font-size: 38px;
+        animation: spin 1s linear infinite;
+    }
 }
 
 .table {
@@ -149,6 +164,7 @@ table {
 }
 
 .form {
+    width: max-content;
     min-width: 25vw;
 
     .choose-title {
@@ -223,5 +239,9 @@ table {
     &>button {
         width: 100%;
         margin-top: 8px;
+    }
+
+    @media screen and (max-width: 768px) {
+        width: 100%;
     }
 }
