@@ -47,7 +47,7 @@ class NameForm extends Component {
         return <>
             <div>{(this.props.names ?? []).concat("Nom").join(" - ")}</div>
             <input ref={this.nameInputRef} disabled={this.props.disabled} autoFocus={this.props.autoFocus}
-                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter()} />
+                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
         </>;
     }
 }
@@ -169,7 +169,7 @@ export class CreateInflowForm extends Component {
     render() {
         return <>
 
-            <ChoosePersonForm ref={this.personFormRef} disabled={this.props.disabled} names={this.props.names} onEnter={() => { }} />
+            <ChoosePersonForm ref={this.personFormRef} disabled={this.props.disabled} names={this.props.names} />
 
             <div>{(this.props.names ?? []).concat("Source").join(" - ")}</div>
             <div className="choose-list-horizontal">
@@ -204,7 +204,7 @@ export class CreateInflowForm extends Component {
 
             <div>{(this.props.names ?? []).concat("Date").join(" - ")}</div>
             <input ref={this.dateInputRef} type="datetime-local" disabled={this.props.disabled} defaultValue={new Date().toISOString().slice(0, 16)}
-                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter()} />
+                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
 
         </>;
     }
@@ -263,7 +263,7 @@ export class CreateOutflowForm extends Component {
     render() {
         return <>
 
-            <ChoosePersonForm ref={this.personFormRef} disabled={this.props.disabled} onEnter={() => { }} />
+            <ChoosePersonForm ref={this.personFormRef} disabled={this.props.disabled} />
 
             <div>{(this.props.names ?? []).concat("Destination").join(" - ")}</div>
             <div className="choose-list-horizontal">
@@ -298,7 +298,7 @@ export class CreateOutflowForm extends Component {
 
             <div>{(this.props.names ?? []).concat("Date").join(" - ")}</div>
             <input ref={this.dateInputRef} type="datetime-local" disabled={this.props.disabled} defaultValue={new Date().toISOString().slice(0, 16)}
-                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter()} />
+                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
 
         </>;
     }
@@ -331,9 +331,9 @@ export class CreateFlowForm extends Component {
         const flow = {};
 
         if (this.state.fromAccount) flow.fromAccount = await this.fromAccountFormRef.current.choose(create);
-        else flow.fromAccount = await this.inflowFormRef.current.choose(create);
+        else flow.inflow = await this.inflowFormRef.current.choose(create);
         if (this.state.toAccount) flow.toAccount = await this.toAccountFormRef.current.choose(create);
-        else flow.toAccount = await this.outflowFormRef.current.choose(create);
+        else flow.outflow = await this.outflowFormRef.current.choose(create);
         flow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
         flow.date = new Date(this.dateInputRef.current.value).getTime();
 
@@ -341,7 +341,7 @@ export class CreateFlowForm extends Component {
         if (!this.dateInputRef.current.value) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
 
         try {
-            return await createFlow({ ...flow, fromAccount: flow.fromAccount?.id, toAccount: flow.toAccount?.id });
+            return await createFlow({ ...flow, fromAccount: flow.fromAccount?.id, inflow: flow.inflow?.id, toAccount: flow.toAccount?.id, outflow: flow.outflow?.id });
         } catch (error) {
             if (error === "From and to accounts must be different")
                 throw { info: <Info>Les comptes source et destination doivent être différents !</Info> };
@@ -351,6 +351,24 @@ export class CreateFlowForm extends Component {
     }
 
     render() {
+
+        const updateAmount = async () => {
+            if (!this.state.fromAccount) {
+                try {
+                    const inflow = await this.inflowFormRef.current.choose(false);
+                    this.amountInputRef.current.value = inflow.amount.toFixed(2).replace(".", ",");
+                } catch (error) {
+                }
+            }
+            if (!this.state.toAccount) {
+                try {
+                    const outflow = await this.outflowFormRef.current.choose(false);
+                    this.amountInputRef.current.value = outflow.amount.toFixed(2).replace(".", ",");
+                } catch (error) {
+                }
+            }
+        };
+
         return <>
 
             <div>{(this.props.names ?? []).concat("Source").join(" - ")}</div>
@@ -360,10 +378,9 @@ export class CreateFlowForm extends Component {
             </div>
 
             {this.state.fromAccount
-                ? <ChooseAccountForm ref={this.fromAccountFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Source")}
-                    onEnter={() => { }} />
+                ? <ChooseAccountForm ref={this.fromAccountFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Source")} />
                 : <ChooseInflowForm ref={this.inflowFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Source")}
-                    onEnter={() => this.inflowFormRef.current.choose(false).then((inflow) => this.amountInputRef.current.value = inflow.amount.toFixed(2).replace(".", ","))} />}
+                    onEnter={() => updateAmount()} />}
 
             <div>{(this.props.names ?? []).concat("Destination").join(" - ")}</div>
             <div className="choose-list-horizontal">
@@ -373,9 +390,9 @@ export class CreateFlowForm extends Component {
 
             {this.state.toAccount
                 ? <ChooseAccountForm ref={this.toAccountFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Destination")}
-                    onEnter={() => this.amountInputRef.current.focus()} />
+                    onEnter={() => updateAmount().then(() => this.amountInputRef.current.focus())} />
                 : <ChooseOutflowForm ref={this.outflowFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Destination")}
-                    onEnter={() => this.outflowFormRef.current.choose(false).then((outflow) => this.amountInputRef.current.value = outflow.amount.toFixed(2).replace(".", ","))} />}
+                    onEnter={() => updateAmount().then(() => this.amountInputRef.current.focus())} />}
 
             <div>{(this.props.names ?? []).concat("Montant").join(" - ")}</div>
             <input ref={this.amountInputRef} disabled={this.props.disabled}
@@ -385,7 +402,7 @@ export class CreateFlowForm extends Component {
 
             <div>{(this.props.names ?? []).concat("Date").join(" - ")}</div>
             <input ref={this.dateInputRef} type="datetime-local" disabled={this.props.disabled} defaultValue={new Date().toISOString().slice(0, 16)}
-                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter()} />
+                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
 
         </>;
     }
