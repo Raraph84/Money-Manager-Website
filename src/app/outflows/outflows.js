@@ -19,7 +19,7 @@ class Outflows extends Component {
     componentDidMount() {
 
         this.setState({ requesting: true });
-        getOutflows(["person", "account", "toBusiness"]).then((outflows) => {
+        getOutflows(["person", "toBusiness"]).then((outflows) => {
             this.setState({ requesting: false, outflows });
         }).catch((error) => {
             if (error === "Invalid token") {
@@ -45,7 +45,6 @@ class Outflows extends Component {
                     <thead>
                         <tr>
                             <th>Personne</th>
-                            <th>Compte</th>
                             <th>Destination</th>
                             <th>Montant</th>
                             <th>Description</th>
@@ -56,7 +55,6 @@ class Outflows extends Component {
                     <tbody>
                         {this.state.outflows.map((outflow) => <LinkedTr key={outflow.id} href={"/outflows/" + outflow.id}>
                             <td>{outflow.person.name}</td>
-                            <td>{outflow.account.name}</td>
                             <td>{outflow.toName ?? outflow.toBusiness.name}</td>
                             <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(outflow.amount)}</td>
                             <td>{outflow.description ?? "N/A"}</td>

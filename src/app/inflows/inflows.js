@@ -19,7 +19,7 @@ class Inflows extends Component {
     componentDidMount() {
 
         this.setState({ requesting: true });
-        getInflows(["person", "account", "fromBusiness"]).then((inflows) => {
+        getInflows(["person", "fromBusiness"]).then((inflows) => {
             this.setState({ requesting: false, inflows });
         }).catch((error) => {
             if (error === "Invalid token") {
@@ -45,7 +45,6 @@ class Inflows extends Component {
                     <thead>
                         <tr>
                             <th>Personne</th>
-                            <th>Compte</th>
                             <th>Source</th>
                             <th>Montant</th>
                             <th>Description</th>
@@ -56,7 +55,6 @@ class Inflows extends Component {
                     <tbody>
                         {this.state.inflows.map((inflow) => <LinkedTr key={inflow.id} href={"/inflows/" + inflow.id}>
                             <td>{inflow.person.name}</td>
-                            <td>{inflow.account.name}</td>
                             <td>{inflow.fromName ?? inflow.fromBusiness.name}</td>
                             <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(inflow.amount)}</td>
                             <td>{inflow.description ?? "N/A"}</td>
