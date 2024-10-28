@@ -35,6 +35,14 @@ class Home extends Component {
 
     render() {
 
+        const logoutHandler = () => {
+            if (!confirm("Voulez-vous vraiment vous déconnecter ?")) return;
+            logout().then(() => {
+                localStorage.removeItem("token");
+                this.props.router.push("/login");
+            }).catch(() => { });
+        };
+
         const numberFormat = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
 
         return <div className="home-page">
@@ -64,6 +72,8 @@ class Home extends Component {
                     <div>{numberFormat.format(account.balance)}</div>
                 </div>)}</div>
             </div>}
+
+            <button onClick={logoutHandler}>Se déconnecter</button>
 
         </div>;
     }

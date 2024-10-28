@@ -54,6 +54,26 @@ header {
     margin-bottom: 15px;
     font-size: 20px;
 
+    .menu {
+        position: relative;
+
+        >div {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--light-blue);
+            border-radius: 16px;
+            padding: 4px 8px;
+            left: -9px;
+
+            &.right {
+                left: unset;
+                right: -9px;
+                text-align: right;
+            }
+        }
+    }
+
     a,
     button {
         padding: 5px;
@@ -71,6 +91,22 @@ header {
             background-color: transparent;
         }
     }
+
+    @media screen and (max-width: 768px) {
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+        justify-content: center;
+        margin: 0;
+        margin-left: -20px;
+        padding: 12px 0;
+        background-color: var(--light-blue);
+
+        .menu>div {
+            bottom: calc(63px - 24px);
+            border-radius: 16px 16px 0 0;
+        }
+    }
 }
 
 main {
@@ -78,6 +114,7 @@ main {
 
     @media screen and (max-width: 768px) {
         width: 100%;
+        padding-bottom: 63px;
     }
 }
 
