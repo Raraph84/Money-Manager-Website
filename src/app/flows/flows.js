@@ -52,8 +52,8 @@ class Flows extends Component {
                     </thead>
                     <tbody>
                         {this.state.flows.map((flow) => <LinkedTr key={flow.id} href={"/flows/" + flow.id}>
-                            <td>{flow.fromAccount ? flow.fromAccount.name : (flow.inflow.fromName ?? flow.inflow.fromBusiness.name)}</td>
-                            <td>{flow.toAccount ? flow.toAccount.name : (flow.outflow.toName ?? flow.outflow.toBusiness.name)}</td>
+                            <td>{flow.fromAccount?.name ?? flow.inflow.fromName ?? flow.inflow.fromBusiness.name}</td>
+                            <td>{flow.toAccount?.name ?? flow.outflow.toName ?? flow.outflow.toBusiness.name}</td>
                             <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(flow.amount)}</td>
                             <td>{moment(flow.date).format("DD/MM/YYYY")}</td>
                         </LinkedTr>)}
