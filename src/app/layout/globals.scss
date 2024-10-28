@@ -68,7 +68,7 @@ header {
 
             &.right {
                 left: unset;
-                right: -9px;
+                right: calc(-9px + 8px);
                 text-align: right;
             }
         }
@@ -81,6 +81,10 @@ header {
         &:hover {
             text-decoration: none;
         }
+    }
+
+    i {
+        display: none !important;
     }
 
     button {
@@ -99,12 +103,34 @@ header {
         justify-content: center;
         margin: 0;
         margin-left: -20px;
-        padding: 12px 0;
+        padding: 8px 0;
         background-color: var(--light-blue);
 
         .menu>div {
-            bottom: calc(63px - 24px);
+            bottom: calc(75px - 16px);
             border-radius: 16px 16px 0 0;
+        }
+
+        >a,
+        .menu {
+            flex: 1 1 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        >a,
+        .menu>button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            font-size: 16px;
+
+            i {
+                display: block !important;
+                font-size: 22px;
+                margin-bottom: 4px;
+            }
         }
     }
 }

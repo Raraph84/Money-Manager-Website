@@ -53,10 +53,10 @@ class HeaderClass extends Component {
         const setMenu = (menu) => this.setState({ menu: this.state.menu === menu ? null : menu }, this.updateMenuPosition);
 
         return <header>
-            <Link href="/">Accueil</Link>
-            <Link href="/flows/create">Créer</Link>
+            <Link href="/"><i className="fa-solid fa-house" />Accueil</Link>
+            <Link href="/flows/create"><i className="fa-solid fa-circle-plus" />Créer</Link>
             <div className="menu" ref={this.state.menu === "flows" ? this.menuRef : null}>
-                <button onClick={() => setMenu("flows")}>Transactions</button>
+                <button onClick={() => setMenu("flows")}><i className="fa-solid fa-bars-staggered" />Transactions</button>
                 {this.state.menu === "flows" && <div>
                     <Link href="/flows" onClick={() => setMenu(null)}>Transactions</Link>
                     <Link href="/inflows" onClick={() => setMenu(null)}>Entrées</Link>
@@ -64,7 +64,7 @@ class HeaderClass extends Component {
                 </div>}
             </div>
             <div className="menu" ref={this.state.menu === "entities" ? this.menuRef : null}>
-                <button onClick={() => setMenu("entities")}>Entités</button>
+                <button onClick={() => setMenu("entities")}><i className="fa-solid fa-user-large" />Entités</button>
                 {this.state.menu === "entities" && <div>
                     <Link href="/people" onClick={() => setMenu(null)}>Personnes</Link>
                     <Link href="/accounts" onClick={() => setMenu(null)}>Comptes</Link>
