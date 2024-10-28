@@ -3,7 +3,7 @@
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { Loading, Info } from "../../utils";
-import { getPeople, getAccounts } from "../../api";
+import { getPeople, getAccounts, logout } from "../../api";
 
 class Home extends Component {
 
