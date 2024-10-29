@@ -4,6 +4,7 @@ import { Component } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { Loading, Info } from "../../utils";
 import { getPeople, getAccounts, logout } from "../../api";
+import Link from "next/link";
 
 class Home extends Component {
 
@@ -59,18 +60,18 @@ class Home extends Component {
 
             {this.state.people && <div className="people-accounts">
                 <div className="title">Personnes</div>
-                <div className="list">{this.state.people.slice(1).map((person) => <div key={person.id}>
+                <div className="list">{this.state.people.slice(1).map((person) => <Link key={person.id} href={"/people/" + person.id}>
                     <div className="">{person.name}</div>
                     <div>{numberFormat.format(person.balance)}</div>
-                </div>)}</div>
+                </Link>)}</div>
             </div>}
 
             {this.state.accounts && <div className="people-accounts">
                 <div className="title">Comptes</div>
-                <div className="list">{this.state.accounts.map((account) => <div key={account.id}>
+                <div className="list">{this.state.accounts.map((account) => <Link key={account.id} href={"/accounts/" + account.id}>
                     <div>{account.name}</div>
                     <div>{numberFormat.format(account.balance)}</div>
-                </div>)}</div>
+                </Link>)}</div>
             </div>}
 
             <button onClick={logoutHandler}>Se déconnecter</button>

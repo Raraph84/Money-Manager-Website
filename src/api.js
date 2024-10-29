@@ -2,15 +2,15 @@ export const login = (password) => postProp("/auth/login", { password }, "token"
 export const logout = () => postNoContent("/auth/logout");
 
 export const createFlow = (flow) => postProp("/flows", flow, "id");
-export const getFlows = (includes) => getProp(withIncludes("/flows", includes), "flows");
+export const getFlows = (includes, accounts) => getProp(withParam(withIncludes("/flows", includes), "accounts", accounts), "flows");
 export const getFlow = (flowId, includes) => get(withIncludes("/flows/" + flowId, includes));
 
 export const createInflow = (inflow) => postProp("/inflows", inflow, "id");
-export const getInflows = (includes) => getProp(withIncludes("/inflows", includes), "inflows");
+export const getInflows = (includes, people) => getProp(withParam(withIncludes("/inflows", includes), "people", people), "inflows");
 export const getInflow = (inflowId, includes) => get(withIncludes("/inflows/" + inflowId, includes));
 
 export const createOutflow = (outflow) => postProp("/outflows", outflow, "id");
-export const getOutflows = (includes) => getProp(withIncludes("/outflows", includes), "outflows");
+export const getOutflows = (includes, people) => getProp(withParam(withIncludes("/outflows", includes), "people", people), "outflows");
 export const getOutflow = (outflowId, includes) => get(withIncludes("/outflows/" + outflowId, includes));
 
 export const createPerson = (person) => postProp("/people", person, "id");
@@ -51,8 +51,11 @@ const getProp = (url, name, auth) => requestJson(url, "GET", null, auth).then((r
 const postProp = (url, body, name, auth) => requestJson(url, "POST", body, auth).then((res) => res[name]);
 const postNoContent = (url, body, auth) => request(url, "POST", body, auth).then(() => undefined);
 
-const withIncludes = (url, includes = []) => {
-    const params = new URLSearchParams();
-    if (includes.length) params.set("includes", includes.join(","));
-    return url + (params.size ? "?" + params : "");
+const withParam = (url, param, values = []) => {
+    if (!values.length) return url;
+    const params = new URLSearchParams(url.split("?").slice(1).join("?"));
+    params.set(param, values.join(","));
+    return url + "?" + params;
 };
+
+const withIncludes = (url, includes) => withParam(url, "includes", includes);

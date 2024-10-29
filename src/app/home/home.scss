@@ -7,7 +7,7 @@
     }
 
     .balance {
-        margin-top: 16px;
+        margin-top: 12px;
         text-align: center;
         font-size: 48px;
     }
@@ -17,16 +17,18 @@
         margin-top: 24px;
 
         .list {
-            margin-top: 12px;
+            margin-top: 8px;
+            margin-bottom: -4px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
 
-            &>div {
+            >a {
                 display: flex;
                 justify-content: space-between;
                 gap: 32px;
                 font-size: 18px;
+                text-decoration: none;
+                padding: 4px 0;
             }
         }
     }
