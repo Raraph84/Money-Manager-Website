@@ -53,10 +53,10 @@ class Home extends Component {
             {this.state.requesting && <Loading />}
             {this.state.info}
 
-            {this.state.people && <div className="balance">
+            {this.state.people && <Link href={"/people/" + this.state.people[0].id} className="balance">
                 <div className="title">Solde</div>
                 <div>{numberFormat.format(this.state.people[0].balance)}</div>
-            </div>}
+            </Link>}
 
             {this.state.people && <div className="people-accounts">
                 <div className="title">Personnes</div>
