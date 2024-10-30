@@ -137,7 +137,6 @@ export class CreateInflowForm extends Component {
     async create(create = true) {
 
         const inflow = {};
-
         inflow.person = await this.personFormRef.current.choose(create);
         inflow.fromBusiness = this.state.fromBusiness ? await this.fromBusinessFormRef.current.choose(create) : null;
         inflow.fromName = !this.state.fromBusiness ? this.fromNameInputRef.current.value : null;
@@ -231,7 +230,6 @@ export class CreateOutflowForm extends Component {
     async create(create = true) {
 
         const outflow = {};
-
         outflow.person = await this.personFormRef.current.choose(create);
         outflow.toBusiness = this.state.toBusiness ? await this.toBusinessFormRef.current.choose(create) : null;
         outflow.toName = !this.state.toBusiness ? this.toNameInputRef.current.value : null;
@@ -316,9 +314,7 @@ export class CreateFlowForm extends Component {
 
         super(props);
 
-        this.inflowFormRef = createRef();
         this.fromAccountFormRef = createRef();
-        this.outflowFormRef = createRef();
         this.toAccountFormRef = createRef();
         this.amountInputRef = createRef();
         this.dateInputRef = createRef();
@@ -329,11 +325,8 @@ export class CreateFlowForm extends Component {
     async create(create = true) {
 
         const flow = {};
-
-        if (this.state.fromAccount) flow.fromAccount = await this.fromAccountFormRef.current.choose(create);
-        else flow.inflow = await this.inflowFormRef.current.choose(create);
-        if (this.state.toAccount) flow.toAccount = await this.toAccountFormRef.current.choose(create);
-        else flow.outflow = await this.outflowFormRef.current.choose(create);
+        flow.fromAccount = this.state.fromAccount ? await this.fromAccountFormRef.current.choose(create) : null;
+        flow.toAccount = this.state.toAccount ? await this.toAccountFormRef.current.choose(create) : null;
         flow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
         flow.date = new Date(this.dateInputRef.current.value).getTime();
 
@@ -341,9 +334,9 @@ export class CreateFlowForm extends Component {
         if (!this.dateInputRef.current.value) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
 
         try {
-            return await createFlow({ ...flow, fromAccount: flow.fromAccount?.id, inflow: flow.inflow?.id, toAccount: flow.toAccount?.id, outflow: flow.outflow?.id });
+            return await createFlow({ ...flow, fromAccount: flow.fromAccount?.id ?? null, toAccount: flow.toAccount?.id ?? null });
         } catch (error) {
-            if (error === "From and to accounts must be different")
+            if (error === "From account and to account cannot be the same")
                 throw { info: <Info>Les comptes source et destination doivent être différents !</Info> };
             else
                 throw { info: <Info>Un problème est survenu !</Info> };
@@ -351,48 +344,25 @@ export class CreateFlowForm extends Component {
     }
 
     render() {
-
-        const updateAmount = async () => {
-            if (!this.state.fromAccount) {
-                try {
-                    const inflow = await this.inflowFormRef.current.choose(false);
-                    this.amountInputRef.current.value = inflow.amount.toFixed(2).replace(".", ",");
-                } catch (error) {
-                }
-            }
-            if (!this.state.toAccount) {
-                try {
-                    const outflow = await this.outflowFormRef.current.choose(false);
-                    this.amountInputRef.current.value = outflow.amount.toFixed(2).replace(".", ",");
-                } catch (error) {
-                }
-            }
-        };
-
         return <>
 
             <div>{(this.props.names ?? []).concat("Source").join(" - ")}</div>
             <div className="choose-list-horizontal">
-                <button disabled={this.props.disabled} className={this.state.fromAccount ? "" : "selected"} onClick={() => this.setState({ fromAccount: false, toAccount: true })}>Entrée</button>
+                <button disabled={this.props.disabled} className={this.state.fromAccount ? "" : "selected"} onClick={() => this.setState({ fromAccount: false, toAccount: true })}>Entrées</button>
                 <button disabled={this.props.disabled} className={this.state.fromAccount ? "selected" : ""} onClick={() => this.setState({ fromAccount: true })}>Compte</button>
             </div>
 
-            {this.state.fromAccount
-                ? <ChooseAccountForm ref={this.fromAccountFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Source")} />
-                : <ChooseInflowForm ref={this.inflowFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Source")}
-                    onEnter={() => updateAmount()} />}
+            {this.state.fromAccount && <ChooseAccountForm ref={this.fromAccountFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Source")}
+                onEnter={() => !this.state.toAccount && this.amountInputRef.current.focus()} />}
 
             <div>{(this.props.names ?? []).concat("Destination").join(" - ")}</div>
             <div className="choose-list-horizontal">
-                <button disabled={this.props.disabled} className={this.state.toAccount ? "" : "selected"} onClick={() => this.setState({ toAccount: false, fromAccount: true })}>Sortie</button>
+                <button disabled={this.props.disabled} className={this.state.toAccount ? "" : "selected"} onClick={() => this.setState({ toAccount: false, fromAccount: true })}>Sorties</button>
                 <button disabled={this.props.disabled} className={this.state.toAccount ? "selected" : ""} onClick={() => this.setState({ toAccount: true })}>Compte</button>
             </div>
 
-            {this.state.toAccount
-                ? <ChooseAccountForm ref={this.toAccountFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Destination")}
-                    onEnter={() => updateAmount().then(() => this.amountInputRef.current.focus())} />
-                : <ChooseOutflowForm ref={this.outflowFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Destination")}
-                    onEnter={() => updateAmount().then(() => this.amountInputRef.current.focus())} />}
+            {this.state.toAccount && <ChooseAccountForm ref={this.toAccountFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Destination")}
+                onEnter={() => this.amountInputRef.current.focus()} />}
 
             <div>{(this.props.names ?? []).concat("Montant").join(" - ")}</div>
             <input ref={this.amountInputRef} disabled={this.props.disabled}
