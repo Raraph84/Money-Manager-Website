@@ -139,8 +139,8 @@ export class CreateInflowForm extends Component {
         const inflow = {};
 
         inflow.person = await this.personFormRef.current.choose(create);
-        if (this.state.fromBusiness) inflow.fromBusiness = await this.fromBusinessFormRef.current.choose(create);
-        else inflow.fromName = this.fromNameInputRef.current.value;
+        inflow.fromBusiness = this.state.fromBusiness ? await this.fromBusinessFormRef.current.choose(create) : null;
+        inflow.fromName = !this.state.fromBusiness ? this.fromNameInputRef.current.value : null;
         inflow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
         inflow.description = this.descriptionInputRef.current.value || null;
         inflow.startDate = this.startDateInputRef.current.value ? new Date(this.startDateInputRef.current.value).getTime() : null;
@@ -152,7 +152,7 @@ export class CreateInflowForm extends Component {
 
         if (create) {
             try {
-                inflow.id = await createInflow({ ...inflow, person: inflow.person.id, fromBusiness: inflow.fromBusiness?.id });
+                inflow.id = await createInflow({ ...inflow, person: inflow.person.id, fromBusiness: inflow.fromBusiness?.id ?? null });
             } catch (error) {
                 if (error === "From name must be between 2 and 50 characters")
                     throw { info: <Info>Le nom de la source doit contenir entre 2 et 50 caractères !</Info>, cb: () => this.fromNameInputRef.current.focus() };
@@ -233,8 +233,8 @@ export class CreateOutflowForm extends Component {
         const outflow = {};
 
         outflow.person = await this.personFormRef.current.choose(create);
-        if (this.state.toBusiness) outflow.toBusiness = await this.toBusinessFormRef.current.choose(create);
-        else outflow.toName = this.toNameInputRef.current.value;
+        outflow.toBusiness = this.state.toBusiness ? await this.toBusinessFormRef.current.choose(create) : null;
+        outflow.toName = !this.state.toBusiness ? this.toNameInputRef.current.value : null;
         outflow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
         outflow.description = this.descriptionInputRef.current.value || null;
         outflow.startDate = this.startDateInputRef.current.value ? new Date(this.startDateInputRef.current.value).getTime() : null;
@@ -246,7 +246,7 @@ export class CreateOutflowForm extends Component {
 
         if (create) {
             try {
-                outflow.id = await createOutflow({ ...outflow, person: outflow.person.id, toBusiness: outflow.toBusiness?.id });
+                outflow.id = await createOutflow({ ...outflow, person: outflow.person.id, toBusiness: outflow.toBusiness?.id ?? null });
             } catch (error) {
                 if (error === "To name must be between 2 and 50 characters")
                     throw { info: <Info>Le nom de la destination doit contenir entre 2 et 50 caractères !</Info>, cb: () => this.toNameInputRef.current.focus() };

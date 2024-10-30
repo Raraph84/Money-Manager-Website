@@ -18,7 +18,7 @@ class Flow extends Component {
     componentDidMount() {
 
         this.setState({ requesting: true });
-        getFlow(this.props.params.flowId, ["inflow", "inflow.fromBusiness", "fromAccount", "outflow", "outflow.toBusiness", "toAccount"]).then((flow) => {
+        getFlow(this.props.params.flowId, ["fromAccount", "toAccount"]).then((flow) => {
             this.setState({ requesting: false, flow });
         }).catch((error) => {
             if (error === "Invalid token") {
@@ -38,8 +38,8 @@ class Flow extends Component {
             {this.state.info}
 
             {this.state.flow && <>
-                <div>Source : {this.state.flow.fromAccount?.name ?? this.state.flow.inflow.fromName ?? this.state.flow.inflow.fromBusiness.name}</div>
-                <div>Destination : {this.state.flow.toAccount?.name ?? this.state.flow.outflow.toName ?? this.state.flow.outflow.toBusiness.name}</div>
+                <div>Source : {this.state.flow.fromAccount?.name ?? "Entrées"}</div>
+                <div>Destination : {this.state.flow.toAccount?.name ?? "Sorties"}</div>
                 <div>Montant : {new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(this.state.flow.amount)}</div>
                 <div>Date : {moment(this.state.flow.date).format("DD/MM/YYYY")}</div>
             </>}

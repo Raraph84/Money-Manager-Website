@@ -29,7 +29,7 @@ class Account extends Component {
                 } else
                     this.setState({ info: <Info>Un problème est survenu !</Info> });
             }),
-            getFlows(["inflow", "inflow.fromBusiness", "fromAccount", "outflow", "outflow.toBusiness", "toAccount"], [this.props.params.accountId])
+            getFlows(["fromAccount", "toAccount"], [this.props.params.accountId])
                 .then((flows) => this.setState({ flows }))
                 .catch(() => this.setState({ info: <Info>Un problème est survenu !</Info> }))
         ]).then(() => this.setState({ requesting: false }));
@@ -55,8 +55,8 @@ class Account extends Component {
                 {this.state.flows.map((flow) => <Link key={flow.id} href={"/flows/" + flow.id}>
                     <span>
                         {flow.fromAccount?.id === this.state.account.id
-                            ? <div>{flow.toAccount?.name ?? flow.outflow.toName ?? flow.outflow.toBusiness.name}</div>
-                            : <div>{flow.fromAccount?.name ?? flow.inflow.fromName ?? flow.inflow.fromBusiness.name}</div>}
+                            ? <div>{flow.toAccount?.name ?? "Entrées"}</div>
+                            : <div>{flow.fromAccount?.name ?? "Sorties"}</div>}
                         <div>{moment(flow.date).format("DD/MM/YYYY")}</div>
                     </span>
                     <span>{flow.fromAccount?.id === this.state.account.id ? "-" : "+"}{numberFormat.format(flow.amount)}</span>

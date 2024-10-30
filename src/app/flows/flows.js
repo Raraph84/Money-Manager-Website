@@ -19,7 +19,7 @@ class Flows extends Component {
     componentDidMount() {
 
         this.setState({ requesting: true });
-        getFlows(["inflow", "inflow.fromBusiness", "fromAccount", "outflow", "outflow.toBusiness", "toAccount"]).then((flows) => {
+        getFlows(["fromAccount", "toAccount"]).then((flows) => {
             this.setState({ requesting: false, flows });
         }).catch((error) => {
             if (error === "Invalid token") {
@@ -52,8 +52,8 @@ class Flows extends Component {
                     </thead>
                     <tbody>
                         {this.state.flows.map((flow) => <LinkedTr key={flow.id} href={"/flows/" + flow.id}>
-                            <td>{flow.fromAccount?.name ?? flow.inflow.fromName ?? flow.inflow.fromBusiness.name}</td>
-                            <td>{flow.toAccount?.name ?? flow.outflow.toName ?? flow.outflow.toBusiness.name}</td>
+                            <td>{flow.fromAccount?.name ?? "Entrées"}</td>
+                            <td>{flow.toAccount?.name ?? "Sorties"}</td>
                             <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(flow.amount)}</td>
                             <td>{moment(flow.date).format("DD/MM/YYYY")}</td>
                         </LinkedTr>)}
