@@ -5,6 +5,9 @@ export const createFlow = (flow) => postProp("/flows", flow, "id");
 export const getFlows = (includes, accounts) => getProp(withParam(withIncludes("/flows", includes), "accounts", accounts), "flows");
 export const getFlow = (flowId, includes) => get(withIncludes("/flows/" + flowId, includes));
 
+export const createFlowLink = (flowId, flowLink) => postProp("/flows/" + flowId + "/links", flowLink, "id");
+export const getFlowLinks = (flowId, includes) => getProp(withIncludes("/flows/" + flowId + "/links", includes), "links");
+
 export const createInflow = (inflow) => postProp("/inflows", inflow, "id");
 export const getInflows = (includes, people) => getProp(withParam(withIncludes("/inflows", includes), "people", people), "inflows");
 export const getInflow = (inflowId, includes) => get(withIncludes("/inflows/" + inflowId, includes));

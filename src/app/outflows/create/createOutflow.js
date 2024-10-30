@@ -20,7 +20,7 @@ class CreateOutflow extends Component {
         const createHandler = () => {
             this.setState({ requesting: true, info: null });
             this.formRef.current.create()
-                .then(() => this.props.router.push("/outflows"))
+                .then(({ id }) => this.props.router.push("/outflows/" + id))
                 .catch(({ info, cb }) => this.setState({ requesting: false, info }, cb));
         };
 

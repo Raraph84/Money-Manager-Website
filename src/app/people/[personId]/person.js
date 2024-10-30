@@ -69,10 +69,8 @@ class Person extends Component {
                         {flow.startDate && <div>{moment(flow.startDate).format("DD/MM/YYYY")} {"->"} {moment(flow.endDate).format("DD/MM/YYYY")}</div>}
                     </span>
                     <span>
-                        <div>
-                            <div>{flow.type === "inflow" ? "+" : "-"}{numberFormat.format(flow.amount)}</div>
-                            <div>{moment(flow.date).format("DD/MM/YYYY")}</div>
-                        </div>
+                        <div>{flow.type === "inflow" ? "+" : "-"}{numberFormat.format(flow.amount)}</div>
+                        <div>{moment(flow.date).format("DD/MM/YYYY")}</div>
                     </span>
                 </Link>)}
             </div>}

@@ -261,7 +261,7 @@ export class CreateOutflowForm extends Component {
     render() {
         return <>
 
-            <ChoosePersonForm ref={this.personFormRef} disabled={this.props.disabled} />
+            <ChoosePersonForm ref={this.personFormRef} disabled={this.props.disabled} names={this.props.names} />
 
             <div>{(this.props.names ?? []).concat("Destination").join(" - ")}</div>
             <div className="choose-list-horizontal">
@@ -302,11 +302,11 @@ export class CreateOutflowForm extends Component {
     }
 }
 
-const ChooseInflowForm = (props) => <ChooseForm name="Entrée" getOptions={() => getInflows(["person", "fromBusiness"])} getForm={(props) => <CreateInflowForm {...props} />} {...props}
-    getName={(inflow) => `${inflow?.fromName ?? inflow?.fromBusiness?.name} -> ${inflow.person.name} - ${new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(inflow.amount)}`} />;
+export const ChooseInflowForm = (props) => <ChooseForm name="Entrée" getOptions={() => getInflows(["person", "fromBusiness"])} getForm={(props) => <CreateInflowForm {...props} />} {...props}
+    getName={(inflow) => `${inflow.fromName ?? inflow.fromBusiness.name} -> ${inflow.person.name} - ${new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(inflow.amount)}`} />;
 
-const ChooseOutflowForm = (props) => <ChooseForm name="Sortie" getOptions={() => getOutflows(["person", "toBusiness"])} getForm={(props) => <CreateOutflowForm {...props} />} {...props}
-    getName={(outflow) => `${outflow.person.name} -> ${outflow?.toName ?? outflow?.toBusiness?.name} - ${new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(outflow.amount)}`} />;
+export const ChooseOutflowForm = (props) => <ChooseForm name="Sortie" getOptions={() => getOutflows(["person", "toBusiness"])} getForm={(props) => <CreateOutflowForm {...props} />} {...props}
+    getName={(outflow) => `${outflow.person.name} -> ${outflow.toName ?? outflow.toBusiness.name} - ${new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(outflow.amount)}`} />;
 
 export class CreateFlowForm extends Component {
 
@@ -333,14 +333,18 @@ export class CreateFlowForm extends Component {
         if (isNaN(flow.amount)) throw { info: <Info>Le montant doit être un nombre !</Info>, cb: () => this.amountInputRef.current.focus() };
         if (!this.dateInputRef.current.value) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
 
-        try {
-            return await createFlow({ ...flow, fromAccount: flow.fromAccount?.id ?? null, toAccount: flow.toAccount?.id ?? null });
-        } catch (error) {
-            if (error === "From account and to account cannot be the same")
-                throw { info: <Info>Les comptes source et destination doivent être différents !</Info> };
-            else
-                throw { info: <Info>Un problème est survenu !</Info> };
+        if (create) {
+            try {
+                flow.id = await createFlow({ ...flow, fromAccount: flow.fromAccount?.id ?? null, toAccount: flow.toAccount?.id ?? null });
+            } catch (error) {
+                if (error === "From account and to account cannot be the same")
+                    throw { info: <Info>Les comptes source et destination doivent être différents !</Info> };
+                else
+                    throw { info: <Info>Un problème est survenu !</Info> };
+            }
         }
+
+        return flow;
     }
 
     render() {

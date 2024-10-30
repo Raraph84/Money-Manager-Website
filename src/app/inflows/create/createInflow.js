@@ -20,7 +20,7 @@ class CreateInflow extends Component {
         const createHandler = () => {
             this.setState({ requesting: true, info: null });
             this.formRef.current.create()
-                .then(() => this.props.router.push("/inflows"))
+                .then(({ id }) => this.props.router.push("/inflows/" + id))
                 .catch(({ info, cb }) => this.setState({ requesting: false, info }, cb));
         };
 
