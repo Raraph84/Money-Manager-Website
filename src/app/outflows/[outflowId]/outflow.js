@@ -3,7 +3,7 @@
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter, useParams } from "next/navigation";
 import { Loading, Info } from "../../../utils";
-import { getOutflow } from "../../../api";
+import { getOutflow, deleteOutflow } from "../../../api";
 import moment from "moment";
 
 class Outflow extends Component {
@@ -30,6 +30,17 @@ class Outflow extends Component {
     }
 
     render() {
+
+        const handleDelete = () => {
+
+            if (!confirm("Voulez-vous vraiment supprimer cette sortie ?")) return;
+
+            this.setState({ requesting: true, info: null });
+            deleteOutflow(this.state.outflow.id)
+                .then(() => this.props.router.push("/outflows"))
+                .catch(() => this.setState({ requesting: false, info: <Info>Un problème est survenu !</Info> }));
+        };
+
         return <div>
 
             <div className="page-title">Sortie</div>
@@ -45,6 +56,9 @@ class Outflow extends Component {
                 <div>Dates : {this.state.outflow.startDate ? `${moment(this.state.outflow.startDate).format("DD/MM/YYYY")} -> ${moment(this.state.outflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</div>
                 <div>Date : {moment(this.state.outflow.date).format("DD/MM/YYYY")}</div>
             </>}
+
+            <br />
+            <button disabled={this.state.requesting} onClick={handleDelete}>Supprimer</button>
 
         </div>;
     }

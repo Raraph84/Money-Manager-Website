@@ -4,6 +4,7 @@ export const logout = () => postNoContent("/auth/logout");
 export const createFlow = (flow) => postProp("/flows", flow, "id");
 export const getFlows = (includes, accounts) => getProp(withParam(withIncludes("/flows", includes), "accounts", accounts), "flows");
 export const getFlow = (flowId, includes) => get(withIncludes("/flows/" + flowId, includes));
+export const deleteFlow = (flowId) => deleteNoContent("/flows/" + flowId);
 
 export const createFlowLink = (flowId, flowLink) => postProp("/flows/" + flowId + "/links", flowLink, "id");
 export const getFlowLinks = (flowId, includes) => getProp(withIncludes("/flows/" + flowId + "/links", includes), "links");
@@ -12,10 +13,12 @@ export const deleteFlowLink = (flowId, flowLinkId) => deleteNoContent("/flows/" 
 export const createInflow = (inflow) => postProp("/inflows", inflow, "id");
 export const getInflows = (includes, people) => getProp(withParam(withIncludes("/inflows", includes), "people", people), "inflows");
 export const getInflow = (inflowId, includes) => get(withIncludes("/inflows/" + inflowId, includes));
+export const deleteInflow = (inflowId) => deleteNoContent("/inflows/" + inflowId);
 
 export const createOutflow = (outflow) => postProp("/outflows", outflow, "id");
 export const getOutflows = (includes, people) => getProp(withParam(withIncludes("/outflows", includes), "people", people), "outflows");
 export const getOutflow = (outflowId, includes) => get(withIncludes("/outflows/" + outflowId, includes));
+export const deleteOutflow = (outflowId) => deleteNoContent("/outflows/" + outflowId);
 
 export const createPerson = (person) => postProp("/people", person, "id");
 export const getPeople = () => getProp("/people", "people");

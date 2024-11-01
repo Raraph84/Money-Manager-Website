@@ -3,7 +3,7 @@
 import { Component } from "react";
 import { usePathname, useSearchParams, useRouter, useParams } from "next/navigation";
 import { Loading, Info } from "../../../utils";
-import { getInflow } from "../../../api";
+import { getInflow, deleteInflow } from "../../../api";
 import moment from "moment";
 
 class Inflow extends Component {
@@ -30,6 +30,17 @@ class Inflow extends Component {
     }
 
     render() {
+
+        const handleDelete = () => {
+
+            if (!confirm("Voulez-vous vraiment supprimer cette entrée ?")) return;
+
+            this.setState({ requesting: true, info: null });
+            deleteInflow(this.state.inflow.id)
+                .then(() => this.props.router.push("/inflows"))
+                .catch(() => this.setState({ requesting: false, info: <Info>Un problème est survenu !</Info> }));
+        };
+
         return <div>
 
             <div className="page-title">Entrée</div>
@@ -45,6 +56,9 @@ class Inflow extends Component {
                 <div>Dates : {this.state.inflow.startDate ? `${moment(this.state.inflow.startDate).format("DD/MM/YYYY")} -> ${moment(this.state.inflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</div>
                 <div>Date : {moment(this.state.inflow.date).format("DD/MM/YYYY")}</div>
             </>}
+
+            <br />
+            <button disabled={this.state.requesting} onClick={handleDelete}>Supprimer</button>
 
         </div>;
     }

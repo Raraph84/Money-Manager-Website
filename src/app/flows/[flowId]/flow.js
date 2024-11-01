@@ -3,7 +3,7 @@
 import { Component, createRef } from "react";
 import { usePathname, useSearchParams, useRouter, useParams } from "next/navigation";
 import { Loading, Info, ChooseOutflowForm, ChooseInflowForm, LinkedTr } from "../../../utils";
-import { createFlowLink, deleteFlowLink, getFlow } from "../../../api";
+import { getFlow, deleteFlow, deleteFlowLink, createFlowLink } from "../../../api";
 import moment from "moment";
 
 class Flow extends Component {
@@ -33,6 +33,16 @@ class Flow extends Component {
     }
 
     render() {
+
+        const handleDelete = () => {
+
+            if (!confirm("Voulez-vous vraiment supprimer cette transaction ?")) return;
+
+            this.setState({ requesting: true, info: null });
+            deleteFlow(this.state.flow.id)
+                .then(() => this.props.router.push("/flows"))
+                .catch(() => this.setState({ requesting: false, info: <Info>Un problème est survenu !</Info> }));
+        };
 
         const handleRemoveFlow = (flowLink) => {
 
@@ -145,10 +155,9 @@ class Flow extends Component {
                     </div> : <div>Aucune sortie liée</div>}
                 </>}
 
-                {(!this.state.flow.fromAccount || !this.state.flow.toAccount) && <>
-
+                {(!this.state.flow.fromAccount || !this.state.flow.toAccount) && this.state.addingFlow && <>
                     <br />
-                    {this.state.addingFlow ? <div className="form">
+                    <div className="form">
 
                         {!this.state.flow.fromAccount
                             ? <ChooseInflowForm ref={this.flowFormRef} disabled={this.state.requesting}
@@ -162,11 +171,20 @@ class Flow extends Component {
                             onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
                             onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
 
-                        <button disabled={this.state.requesting} onClick={handleAddFlow}>Ajouter</button>
+                        <div className="buttons">
+                            <button disabled={this.state.requesting} onClick={() => this.setState({ addingFlow: false })}>Annuler</button>
+                            <button disabled={this.state.requesting} onClick={handleAddFlow}>Ajouter</button>
+                        </div>
 
-                    </div> : <button disabled={this.state.requesting} onClick={() => this.setState({ addingFlow: true })}>Ajouter une {!this.state.flow.fromAccount ? "entrée" : "sortie"}</button>}
-
+                    </div>
                 </>}
+
+                <br />
+                <div className="buttons">
+                    {(!this.state.flow.fromAccount || !this.state.flow.toAccount) && !this.state.addingFlow &&
+                        <button disabled={this.state.requesting} onClick={() => this.setState({ addingFlow: true })}>Ajouter une {!this.state.flow.fromAccount ? "entrée" : "sortie"}</button>}
+                    <button disabled={this.state.requesting} onClick={handleDelete}>Supprimer</button>
+                </div>
 
             </>}
 

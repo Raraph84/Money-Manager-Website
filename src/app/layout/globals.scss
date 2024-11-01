@@ -304,7 +304,8 @@ table {
         margin-bottom: 12px;
     }
 
-    &>button {
+    &>button,
+    .buttons button {
         width: 100%;
         margin-top: 8px;
     }
@@ -333,4 +334,9 @@ table {
             border-bottom: none;
         }
     }
+}
+
+.buttons {
+    display: flex;
+    gap: 8px;
 }
