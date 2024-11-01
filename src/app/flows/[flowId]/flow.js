@@ -73,6 +73,11 @@ class Flow extends Component {
                 amount: parseFloat(this.amountInputRef.current.value.replace(",", "."))
             };
 
+            if (isNaN(flowLink.amount)) {
+                this.setState({ requesting: false, info: <Info>Le montant doit être un nombre !</Info> }, () => this.amountInputRef.current.focus());
+                return;
+            }
+
             createFlowLink(this.state.flow.id, { ...flowLink, inflow: flowLink.inflow?.id ?? null, outflow: flowLink.outflow?.id ?? null })
                 .then((id) => this.setState({ requesting: false, addingFlow: false, flow: { ...this.state.flow, links: [...this.state.flow.links, { ...flowLink, id }] } }))
                 .catch(() => this.setState({ requesting: false, info: <Info>Un problème est survenu !</Info> }));
@@ -162,9 +167,9 @@ class Flow extends Component {
 
                         {!this.state.flow.fromAccount
                             ? <ChooseInflowForm ref={this.flowFormRef} disabled={this.state.requesting}
-                                onEnter={() => this.flowFormRef.current.choose(false).then(({ amount }) => { this.amountInputRef.current.value = amount.toFixed(2).replace(".", ","); this.amountInputRef.current.focus(); })} />
+                                onEnter={() => this.flowFormRef.current.choose(false).then(({ amount }) => this.amountInputRef.current.value = amount.toFixed(2).replace(".", ",")).catch(() => { }).finally(() => this.amountInputRef.current.focus())} />
                             : <ChooseOutflowForm ref={this.flowFormRef} disabled={this.state.requesting}
-                                onEnter={() => this.flowFormRef.current.choose(false).then(({ amount }) => { this.amountInputRef.current.value = amount.toFixed(2).replace(".", ","); this.amountInputRef.current.focus(); })} />}
+                                onEnter={() => this.flowFormRef.current.choose(false).then(({ amount }) => this.amountInputRef.current.value = amount.toFixed(2).replace(".", ",")).catch(() => { }).finally(() => this.amountInputRef.current.focus())} />}
 
                         <div>Montant</div>
                         <input ref={this.amountInputRef} disabled={this.state.requesting}

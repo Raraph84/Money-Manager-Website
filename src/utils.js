@@ -126,6 +126,7 @@ export class CreateInflowForm extends Component {
         this.fromBusinessFormRef = createRef();
         this.fromNameInputRef = createRef();
         this.amountInputRef = createRef();
+        this.feesInputRef = createRef();
         this.descriptionInputRef = createRef();
         this.startDateInputRef = createRef();
         this.endDateInputRef = createRef();
@@ -141,6 +142,7 @@ export class CreateInflowForm extends Component {
         inflow.fromBusiness = this.state.fromBusiness ? await this.fromBusinessFormRef.current.choose(create) : null;
         inflow.fromName = !this.state.fromBusiness ? this.fromNameInputRef.current.value : null;
         inflow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
+        inflow.fees = this.feesInputRef.current.value ? parseFloat(this.feesInputRef.current.value.replace(",", ".")) : 0;
         inflow.description = this.descriptionInputRef.current.value || null;
         inflow.startDate = this.startDateInputRef.current.value ? new Date(this.startDateInputRef.current.value).getTime() : null;
         inflow.endDate = this.endDateInputRef.current.value ? new Date(this.endDateInputRef.current.value).getTime() : null;
@@ -187,6 +189,12 @@ export class CreateInflowForm extends Component {
 
             <div>{(this.props.names ?? []).concat("Montant").join(" - ")}</div>
             <input ref={this.amountInputRef} disabled={this.props.disabled}
+                onKeyDown={(event) => event.key === "Enter" && this.feesInputRef.current.focus()}
+                onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
+                onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
+
+            <div>{(this.props.names ?? []).concat("Frais").join(" - ")}</div>
+            <input ref={this.feesInputRef} disabled={this.props.disabled}
                 onKeyDown={(event) => event.key === "Enter" && this.descriptionInputRef.current.focus()}
                 onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
                 onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
