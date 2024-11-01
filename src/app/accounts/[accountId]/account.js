@@ -29,7 +29,7 @@ class Account extends Component {
                 } else
                     this.setState({ info: <Info>Un problème est survenu !</Info> });
             }),
-            getFlows(["fromAccount", "toAccount", "links", "links.inflow", "links.inflow.fromBusiness", "links.outflow", "links.outflow.toBusiness"], [this.props.params.accountId])
+            getFlows(["fromAccount", "toAccount", "links", "links.inflow", "links.inflow.person", "links.inflow.fromBusiness", "links.outflow", "links.outflow.person", "links.outflow.toBusiness"], [this.props.params.accountId])
                 .then((flows) => this.setState({ flows }))
                 .catch(() => this.setState({ info: <Info>Un problème est survenu !</Info> }))
         ]).then(() => this.setState({ requesting: false }));
@@ -54,14 +54,18 @@ class Account extends Component {
             {this.state.flows && <div className="flows">
                 {this.state.flows.map((flow) => <Link key={flow.id} href={"/flows/" + flow.id}>
                     <span>
-                        <div>{flow.fromAccount?.name ?? flow.toAccount.name}</div>
-                        {flow.links.map((flowLink) => <Fragment key={flowLink.id}>
-                            {flowLink.inflow
-                                ? <div>{flowLink.inflow.fromName ?? flowLink.inflow.fromBusiness.name}</div>
-                                : <div>{flowLink.outflow.toName ?? flowLink.outflow.toBusiness.name}</div>}
-                            {(flowLink.inflow ?? flowLink.outflow).description && <div>{(flowLink.inflow ?? flowLink.outflow).description}</div>}
-                            {(flowLink.inflow ?? flowLink.outflow).startDate && <div>{moment((flowLink.inflow ?? flowLink.outflow).startDate).format("DD/MM/YYYY")} {"->"} {moment((flowLink.inflow ?? flowLink.outflow).endDate).format("DD/MM/YYYY")}</div>}
+                        {flow.links.filter((flowLink) => flowLink.inflow).map(({ inflow }) => <Fragment key={inflow.id}>
+                            <div>{inflow.fromName ?? inflow.fromBusiness.name} {"->"} {inflow.person.name}</div>
+                            {inflow.description && <div>- {inflow.description}</div>}
+                            {inflow.startDate && inflow.endDate && <div>- {moment(inflow.startDate).format("DD/MM/YYYY")} {"->"} {moment(inflow.endDate).format("DD/MM/YYYY")}</div>}
                         </Fragment>)}
+                        {flow.fromAccount && flow.fromAccount.id !== this.state.account.id && <div>{flow.fromAccount.name}</div>}
+                        {flow.links.filter((flowLink) => flowLink.outflow).map(({ outflow }) => <Fragment key={outflow.id}>
+                            <div>{outflow.person.name} {"->"} {outflow.toName ?? outflow.toBusiness.name}</div>
+                            {outflow.description && <div>- {outflow.description}</div>}
+                            {outflow.startDate && outflow.endDate && <div>- {moment(outflow.startDate).format("DD/MM/YYYY")} {"->"} {moment(outflow.endDate).format("DD/MM/YYYY")}</div>}
+                        </Fragment>)}
+                        {flow.toAccount && flow.toAccount.id !== this.state.account.id && <div>{flow.toAccount.name}</div>}
                     </span>
                     <span>
                         <div>{flow.fromAccount?.id === this.state.account.id ? "-" : "+"}{numberFormat.format(flow.amount)}</div>

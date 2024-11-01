@@ -40,10 +40,10 @@ class Person extends Component {
 
     render() {
 
-        const flows = [];
-        if (this.state.inflows) for (const inflow of this.state.inflows) flows.push({ type: "inflow", ...inflow });
-        if (this.state.outflows) for (const outflow of this.state.outflows) flows.push({ type: "outflow", ...outflow });
-        flows.sort((a, b) => b.date - a.date);
+        const inoutflows = [];
+        if (this.state.inflows) for (const inflow of this.state.inflows) inoutflows.push({ type: "inflow", ...inflow });
+        if (this.state.outflows) for (const outflow of this.state.outflows) inoutflows.push({ type: "outflow", ...outflow });
+        inoutflows.sort((a, b) => b.date - a.date);
 
         const numberFormat = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
 
@@ -59,18 +59,18 @@ class Person extends Component {
                 <div>Solde : {numberFormat.format(this.state.person.balance)}</div>
             </>}
 
-            {flows.length > 0 && <div className="flows">
-                {flows.map((flow, i) => <Link key={i} href={`/${flow.type}s/${flow.id}`}>
+            {inoutflows.length > 0 && <div className="flows">
+                {inoutflows.map((inoutflow, i) => <Link key={i} href={`/${inoutflow.type}s/${inoutflow.id}`}>
                     <span>
-                        {flow.type === "inflow"
-                            ? <div>{flow.fromName ?? flow.fromBusiness.name}</div>
-                            : <div>{flow.toName ?? flow.toBusiness.name}</div>}
-                        {flow.description && <div>{flow.description}</div>}
-                        {flow.startDate && <div>{moment(flow.startDate).format("DD/MM/YYYY")} {"->"} {moment(flow.endDate).format("DD/MM/YYYY")}</div>}
+                        {inoutflow.type === "inflow"
+                            ? <div>{inoutflow.fromName ?? inoutflow.fromBusiness.name}</div>
+                            : <div>{inoutflow.toName ?? inoutflow.toBusiness.name}</div>}
+                        {inoutflow.description && <div>{inoutflow.description}</div>}
+                        {inoutflow.startDate && inoutflow.endDate && <div>{moment(inoutflow.startDate).format("DD/MM/YYYY")} {"->"} {moment(inoutflow.endDate).format("DD/MM/YYYY")}</div>}
                     </span>
                     <span>
-                        <div>{flow.type === "inflow" ? "+" : "-"}{numberFormat.format(flow.amount)}</div>
-                        <div>{moment(flow.date).format("DD/MM/YYYY")}</div>
+                        <div>{inoutflow.type === "inflow" ? "+" : "-"}{numberFormat.format(inoutflow.amount)}</div>
+                        <div>{moment(inoutflow.date).format("DD/MM/YYYY")}</div>
                     </span>
                 </Link>)}
             </div>}

@@ -7,6 +7,7 @@ export const getFlow = (flowId, includes) => get(withIncludes("/flows/" + flowId
 
 export const createFlowLink = (flowId, flowLink) => postProp("/flows/" + flowId + "/links", flowLink, "id");
 export const getFlowLinks = (flowId, includes) => getProp(withIncludes("/flows/" + flowId + "/links", includes), "links");
+export const deleteFlowLink = (flowId, flowLinkId) => deleteNoContent("/flows/" + flowId + "/links/" + flowLinkId);
 
 export const createInflow = (inflow) => postProp("/inflows", inflow, "id");
 export const getInflows = (includes, people) => getProp(withParam(withIncludes("/inflows", includes), "people", people), "inflows");
@@ -53,6 +54,8 @@ const getProp = (url, name, auth) => requestJson(url, "GET", null, auth).then((r
 
 const postProp = (url, body, name, auth) => requestJson(url, "POST", body, auth).then((res) => res[name]);
 const postNoContent = (url, body, auth) => request(url, "POST", body, auth).then(() => undefined);
+
+const deleteNoContent = (url, auth) => request(url, "DELETE", null, auth).then(() => undefined);
 
 const withParam = (url, param, values = []) => {
     if (!values.length) return url;

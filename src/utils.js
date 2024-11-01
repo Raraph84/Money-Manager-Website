@@ -12,8 +12,8 @@ export const Info = ({ children }) => {
     return <div className="info">{children}</div>;
 };
 
-export const LinkedTr = ({ children, href }) => <tr className="linked">
-    {(Array.isArray(children) ? children : [children]).map((child, index) => <td key={index}><Link href={href}>{child.props.children}</Link></td>)}
+export const LinkedTr = ({ children, href, excludes = [] }) => <tr className="linked">
+    {(Array.isArray(children) ? children : [children]).filter((child) => child).map((child, index) => !excludes.includes(index) ? <td key={index}><Link href={href}>{child.props.children}</Link></td> : <td key={index}>{child.props.children}</td>)}
 </tr>;
 
 class NameForm extends Component {
