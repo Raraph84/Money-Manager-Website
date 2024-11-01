@@ -57,6 +57,8 @@ class Person extends Component {
             {this.state.person && <>
                 <div>Nom : {this.state.person.name}</div>
                 <div>Solde : {numberFormat.format(this.state.person.balance)}</div>
+                <div>Total entrées : {numberFormat.format(this.state.inflows?.reduce((total, inflow) => total + inflow.amount, 0) ?? 0)}</div>
+                <div>Total sorties : {numberFormat.format(this.state.outflows?.reduce((total, outflow) => total + outflow.amount, 0) ?? 0)}</div>
             </>}
 
             {inoutflows.length > 0 && <div className="flows">

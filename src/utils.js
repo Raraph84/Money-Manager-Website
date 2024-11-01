@@ -1,5 +1,5 @@
 import { Component, createRef } from "react";
-import { createPerson, createAccount, createBusiness, getPeople, getAccounts, getBusinesses, createInflow, createOutflow, createFlow, getInflows, getOutflows } from "./api";
+import { createPerson, createAccount, createBusiness, getPeople, getAccounts, getBusinesses, createInflow, createOutflow, getInflows, getOutflows, createFlow } from "./api";
 import Link from "next/link";
 
 export const Loading = () => {
@@ -157,6 +157,8 @@ export class CreateInflowForm extends Component {
                     throw { info: <Info>Le nom de la source doit contenir entre 2 et 50 caractères !</Info>, cb: () => this.fromNameInputRef.current.focus() };
                 else if (error === "Description must be between 2 and 100 characters")
                     throw { info: <Info>La description doit contenir entre 2 et 100 caractères !</Info>, cb: () => this.descriptionInputRef.current.focus() };
+                else if (error === "Start date and end date must be both set or both null")
+                    throw { info: <Info>La date de début et la date de fin doivent être toutes les deux définies ou toutes les deux non définies !</Info>, cb: () => this.startDateInputRef.current.focus() };
                 else
                     throw { info: <Info>Un problème est survenu !</Info> };
             }
@@ -250,6 +252,8 @@ export class CreateOutflowForm extends Component {
                     throw { info: <Info>Le nom de la destination doit contenir entre 2 et 50 caractères !</Info>, cb: () => this.toNameInputRef.current.focus() };
                 else if (error === "Description must be between 2 and 100 characters")
                     throw { info: <Info>La description doit contenir entre 2 et 100 caractères !</Info>, cb: () => this.descriptionInputRef.current.focus() };
+                else if (error === "Start date and end date must be both set or both null")
+                    throw { info: <Info>La date de début et la date de fin doivent être toutes les deux définies ou toutes les deux non définies !</Info>, cb: () => this.startDateInputRef.current.focus() };
                 else
                     throw { info: <Info>Un problème est survenu !</Info> };
             }

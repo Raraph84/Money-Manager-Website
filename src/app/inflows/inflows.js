@@ -57,8 +57,8 @@ class Inflows extends Component {
                             <td>{inflow.person.name}</td>
                             <td>{inflow.fromName ?? inflow.fromBusiness.name}</td>
                             <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(inflow.amount)}</td>
-                            <td>{inflow.description ?? "N/A"}</td>
-                            <td>{inflow.startDate && inflow.endDate ? `${moment(inflow.startDate).format("DD/MM/YYYY")} -> ${moment(inflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</td>
+                            <td>{inflow.description ?? "Non précisée"}</td>
+                            <td>{inflow.startDate && inflow.endDate ? `${moment(inflow.startDate).format("DD/MM/YYYY")} -> ${moment(inflow.endDate).format("DD/MM/YYYY")}` : "Non précisées"}</td>
                             <td>{moment(inflow.date).format("DD/MM/YYYY")}</td>
                         </LinkedTr>)}
                     </tbody>

@@ -4,6 +4,7 @@ import { Component, createRef } from "react";
 import { usePathname, useSearchParams, useRouter, useParams } from "next/navigation";
 import { Loading, Info, ChooseOutflowForm, ChooseInflowForm, LinkedTr } from "../../../utils";
 import { getFlow, deleteFlow, deleteFlowLink, createFlowLink } from "../../../api";
+import Link from "next/link";
 import moment from "moment";
 
 class Flow extends Component {
@@ -88,8 +89,8 @@ class Flow extends Component {
 
             {this.state.flow && <>
 
-                {this.state.flow.fromAccount && <div>Source : {this.state.flow.fromAccount.name}</div>}
-                {this.state.flow.toAccount && <div>Destination : {this.state.flow.toAccount.name}</div>}
+                {this.state.flow.fromAccount && <div>Source : <Link href={"/accounts/" + this.state.flow.fromAccount.id}>{this.state.flow.fromAccount.name}</Link></div>}
+                {this.state.flow.toAccount && <div>Destination : <Link href={"/accounts/" + this.state.flow.toAccount.id}>{this.state.flow.toAccount.name}</Link></div>}
                 <div>Montant : {numberFormat.format(this.state.flow.amount)}</div>
                 <div>Date : {moment(this.state.flow.date).format("DD/MM/YYYY")}</div>
 
@@ -114,8 +115,8 @@ class Flow extends Component {
                                     <td>{flowLink.inflow.person.name}</td>
                                     <td>{flowLink.inflow.fromName ?? flowLink.inflow.fromBusiness.name}</td>
                                     <td>{numberFormat.format(flowLink.inflow.amount)}</td>
-                                    <td>{flowLink.inflow.description ?? "N/A"}</td>
-                                    <td>{flowLink.inflow.startDate && flowLink.inflow.endDate ? `${moment(flowLink.inflow.startDate).format("DD/MM/YYYY")} -> ${moment(flowLink.inflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</td>
+                                    <td>{flowLink.inflow.description ?? "Non précisée"}</td>
+                                    <td>{flowLink.inflow.startDate && flowLink.inflow.endDate ? `${moment(flowLink.inflow.startDate).format("DD/MM/YYYY")} -> ${moment(flowLink.inflow.endDate).format("DD/MM/YYYY")}` : "Non précisées"}</td>
                                     <td>{moment(flowLink.inflow.date).format("DD/MM/YYYY")}</td>
                                     <td><button disabled={this.state.requesting} onClick={() => handleRemoveFlow(flowLink)}>Supprimer</button></td>
                                 </LinkedTr>)}
@@ -145,8 +146,8 @@ class Flow extends Component {
                                     <td>{flowLink.outflow.person.name}</td>
                                     <td>{flowLink.outflow.toName ?? flowLink.outflow.toBusiness.name}</td>
                                     <td>{numberFormat.format(flowLink.outflow.amount)}</td>
-                                    <td>{flowLink.outflow.description ?? "N/A"}</td>
-                                    <td>{flowLink.outflow.startDate && flowLink.outflow.endDate ? `${moment(flowLink.outflow.startDate).format("DD/MM/YYYY")} -> ${moment(flowLink.outflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</td>
+                                    <td>{flowLink.outflow.description ?? "Non précisée"}</td>
+                                    <td>{flowLink.outflow.startDate && flowLink.outflow.endDate ? `${moment(flowLink.outflow.startDate).format("DD/MM/YYYY")} -> ${moment(flowLink.outflow.endDate).format("DD/MM/YYYY")}` : "Non précisées"}</td>
                                     <td>{moment(flowLink.outflow.date).format("DD/MM/YYYY")}</td>
                                     <td><button disabled={this.state.requesting} onClick={() => handleRemoveFlow(flowLink)}>Supprimer</button></td>
                                 </LinkedTr>)}
