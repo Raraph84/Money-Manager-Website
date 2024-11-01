@@ -1,6 +1,6 @@
 "use client";
 
-import { Component } from "react";
+import { Component, Fragment } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { Loading, Info, LinkedTr } from "../../utils";
 import { getFlows } from "../../api";
@@ -19,7 +19,7 @@ class Flows extends Component {
     componentDidMount() {
 
         this.setState({ requesting: true });
-        getFlows(["fromAccount", "toAccount", "links", "links.inflow", "links.inflow.fromBusiness", "links.outflow", "links.outflow.toBusiness"]).then((flows) => {
+        getFlows(["fromAccount", "toAccount", "links", "links.inflow", "links.inflow.person", "links.inflow.fromBusiness", "links.outflow", "links.outflow.person", "links.outflow.toBusiness"]).then((flows) => {
             this.setState({ requesting: false, flows });
         }).catch((error) => {
             if (error === "Invalid token") {
@@ -52,8 +52,22 @@ class Flows extends Component {
                     </thead>
                     <tbody>
                         {this.state.flows.map((flow) => <LinkedTr key={flow.id} href={"/flows/" + flow.id}>
-                            <td>{flow.fromAccount?.name ?? flow.links.map((flowLink) => <div key={flowLink.id}>{flowLink.inflow.fromName ?? flowLink.inflow.fromBusiness.name}</div>)}</td>
-                            <td>{flow.toAccount?.name ?? flow.links.map((flowLink) => <div key={flowLink.id}>{flowLink.outflow.toName ?? flowLink.outflow.toBusiness.name}</div>)}</td>
+                            <td>
+                                {flow.links.filter((flowLink) => flowLink.inflow).map(({ inflow }) => <Fragment key={inflow.id}>
+                                    <div>{inflow.fromName ?? inflow.fromBusiness.name} {"->"} {inflow.person.name}</div>
+                                    {inflow.description && <div>- {inflow.description}</div>}
+                                    {inflow.startDate && inflow.endDate && <div>- {moment(inflow.startDate).format("DD/MM/YYYY")} {"->"} {moment(inflow.endDate).format("DD/MM/YYYY")}</div>}
+                                </Fragment>)}
+                                {flow.fromAccount && <div>{flow.fromAccount.name}</div>}
+                            </td>
+                            <td>
+                                {flow.links.filter((flowLink) => flowLink.outflow).map(({ outflow }) => <Fragment key={outflow.id}>
+                                    <div>{outflow.person.name} {"->"} {outflow.toName ?? outflow.toBusiness.name}</div>
+                                    {outflow.description && <div>- {outflow.description}</div>}
+                                    {outflow.startDate && outflow.endDate && <div>- {moment(outflow.startDate).format("DD/MM/YYYY")} {"->"} {moment(outflow.endDate).format("DD/MM/YYYY")}</div>}
+                                </Fragment>)}
+                                {flow.toAccount && <div>{flow.toAccount.name}</div>}
+                            </td>
                             <td>{new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(flow.amount)}</td>
                             <td>{moment(flow.date).format("DD/MM/YYYY")}</td>
                         </LinkedTr>)}
