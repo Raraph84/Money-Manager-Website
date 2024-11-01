@@ -2,9 +2,8 @@
 
 import { Component, createRef } from "react";
 import { usePathname, useSearchParams, useRouter, useParams } from "next/navigation";
-import { Loading, Info, ChooseOutflowForm, ChooseInflowForm } from "../../../utils";
-import { createFlowLink, getFlow } from "../../../api";
-import Link from "next/link";
+import { Loading, Info, ChooseOutflowForm, ChooseInflowForm, LinkedTr } from "../../../utils";
+import { createFlowLink, deleteFlowLink, getFlow } from "../../../api";
 import moment from "moment";
 
 class Flow extends Component {
@@ -35,6 +34,16 @@ class Flow extends Component {
 
     render() {
 
+        const handleRemoveFlow = (flowLink) => {
+
+            if (!confirm("Voulez-vous vraiment supprimer ce lien de transaction ?")) return;
+
+            this.setState({ requesting: true, info: null });
+            deleteFlowLink(this.state.flow.id, flowLink.id)
+                .then(() => this.setState({ requesting: false, flow: { ...this.state.flow, links: this.state.flow.links.filter((link) => link !== flowLink) } }))
+                .catch(() => this.setState({ requesting: false, info: <Info>Un problème est survenu !</Info> }));
+        };
+
         const handleAddFlow = async () => {
 
             this.setState({ requesting: true, info: null });
@@ -47,19 +56,15 @@ class Flow extends Component {
                 return;
             }
 
-            const flowLink = {};
-            flowLink.inflow = !this.state.flow.fromAccount ? flow : null;
-            flowLink.outflow = !this.state.flow.toAccount ? flow : null;
-            flowLink.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
+            const flowLink = {
+                inflow: !this.state.flow.fromAccount ? flow : null,
+                outflow: !this.state.flow.toAccount ? flow : null,
+                amount: parseFloat(this.amountInputRef.current.value.replace(",", "."))
+            };
 
-            try {
-                flowLink.id = await createFlowLink(this.state.flow.id, { ...flowLink, inflow: flowLink.inflow?.id ?? null, outflow: flowLink.outflow?.id ?? null });
-            } catch (error) {
-                this.setState({ requesting: false, info: <Info>Un problème est survenu !</Info> });
-                return;
-            }
-
-            this.setState({ requesting: false, addingFlow: false, flow: { ...this.state.flow, links: [...this.state.flow.links, flowLink] } });
+            createFlowLink(this.state.flow.id, { ...flowLink, inflow: flowLink.inflow?.id ?? null, outflow: flowLink.outflow?.id ?? null })
+                .then((id) => this.setState({ requesting: false, addingFlow: false, flow: { ...this.state.flow, links: [...this.state.flow.links, { ...flowLink, id }] } }))
+                .catch(() => this.setState({ requesting: false, info: <Info>Un problème est survenu !</Info> }));
         };
 
         const numberFormat = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
@@ -79,65 +84,77 @@ class Flow extends Component {
                 <div>Date : {moment(this.state.flow.date).format("DD/MM/YYYY")}</div>
 
                 {!this.state.flow.fromAccount && <>
-
                     <br />
                     <div>Entrées :</div>
-                    <div className="flows">
-                        {this.state.flow.links.map(({ inflow }, i) => <Link key={i} href={`/inflows/${inflow.id}`}>
-                            <span>
-                                <div>{inflow.fromName ?? inflow.fromBusiness.name}</div>
-                                {inflow.description && <div>{inflow.description}</div>}
-                                {inflow.startDate && <div>{moment(inflow.startDate).format("DD/MM/YYYY")} {"->"} {moment(inflow.endDate).format("DD/MM/YYYY")}</div>}
-                            </span>
-                            <span>
-                                <div>
-                                    <div>{numberFormat.format(inflow.amount)}</div>
-                                    <div>{moment(inflow.date).format("DD/MM/YYYY")}</div>
-                                </div>
-                            </span>
-                        </Link>)}
-                    </div>
-
-                    <br />
-                    {this.state.addingFlow ? <div className="form">
-
-                        <ChooseInflowForm ref={this.flowFormRef} disabled={this.state.requesting} onEnter={() => this.amountInputRef.current.focus()} />
-
-                        <div>Montant</div>
-                        <input ref={this.amountInputRef} disabled={this.state.requesting}
-                            onKeyDown={(event) => event.key === "Enter" && handleAddFlow()}
-                            onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
-                            onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
-
-                        <button onClick={handleAddFlow}>Ajouter</button>
-
-                    </div> : <button onClick={() => this.setState({ addingFlow: true })}>Ajouter une entrée</button>}
+                    {this.state.flow.links.length ? <div className="table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Personne</th>
+                                    <th>Source</th>
+                                    <th>Montant</th>
+                                    <th>Description</th>
+                                    <th>Dates</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.flow.links.map((flowLink) => <LinkedTr key={flowLink.inflow.id} href={"/inflows/" + flowLink.inflow.id} excludes={[6]}>
+                                    <td>{flowLink.inflow.person.name}</td>
+                                    <td>{flowLink.inflow.fromName ?? flowLink.inflow.fromBusiness.name}</td>
+                                    <td>{numberFormat.format(flowLink.inflow.amount)}</td>
+                                    <td>{flowLink.inflow.description ?? "N/A"}</td>
+                                    <td>{flowLink.inflow.startDate && flowLink.inflow.endDate ? `${moment(flowLink.inflow.startDate).format("DD/MM/YYYY")} -> ${moment(flowLink.inflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</td>
+                                    <td>{moment(flowLink.inflow.date).format("DD/MM/YYYY")}</td>
+                                    <td><button disabled={this.state.requesting} onClick={() => handleRemoveFlow(flowLink)}>Supprimer</button></td>
+                                </LinkedTr>)}
+                            </tbody>
+                        </table>
+                    </div> : <div>Aucune entrée liée</div>}
                 </>}
 
                 {!this.state.flow.toAccount && <>
-
                     <br />
                     <div>Sorties :</div>
-                    <div className="flows">
-                        {this.state.flow.links.map(({ outflow }, i) => <Link key={i} href={`/outflows/${outflow.id}`}>
-                            <span>
-                                <div>{outflow.toName ?? outflow.toBusiness.name}</div>
-                                {outflow.description && <div>{outflow.description}</div>}
-                                {outflow.startDate && <div>{moment(outflow.startDate).format("DD/MM/YYYY")} {"->"} {moment(outflow.endDate).format("DD/MM/YYYY")}</div>}
-                            </span>
-                            <span>
-                                <div>
-                                    <div>{numberFormat.format(outflow.amount)}</div>
-                                    <div>{moment(outflow.date).format("DD/MM/YYYY")}</div>
-                                </div>
-                            </span>
-                        </Link>)}
-                    </div>
+                    {this.state.flow.links.length ? <div className="table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Personne</th>
+                                    <th>Destination</th>
+                                    <th>Montant</th>
+                                    <th>Description</th>
+                                    <th>Dates</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.flow.links.map((flowLink) => <LinkedTr key={flowLink.outflow.id} href={"/outflows/" + flowLink.outflow.id} excludes={[6]}>
+                                    <td>{flowLink.outflow.person.name}</td>
+                                    <td>{flowLink.outflow.toName ?? flowLink.outflow.toBusiness.name}</td>
+                                    <td>{numberFormat.format(flowLink.outflow.amount)}</td>
+                                    <td>{flowLink.outflow.description ?? "N/A"}</td>
+                                    <td>{flowLink.outflow.startDate && flowLink.outflow.endDate ? `${moment(flowLink.outflow.startDate).format("DD/MM/YYYY")} -> ${moment(flowLink.outflow.endDate).format("DD/MM/YYYY")}` : "N/A"}</td>
+                                    <td>{moment(flowLink.outflow.date).format("DD/MM/YYYY")}</td>
+                                    <td><button disabled={this.state.requesting} onClick={() => handleRemoveFlow(flowLink)}>Supprimer</button></td>
+                                </LinkedTr>)}
+                            </tbody>
+                        </table>
+                    </div> : <div>Aucune sortie liée</div>}
+                </>}
+
+                {(!this.state.flow.fromAccount || !this.state.flow.toAccount) && <>
 
                     <br />
                     {this.state.addingFlow ? <div className="form">
 
-                        <ChooseOutflowForm ref={this.flowFormRef} disabled={this.state.requesting} onEnter={() => this.amountInputRef.current.focus()} />
+                        {!this.state.flow.fromAccount
+                            ? <ChooseInflowForm ref={this.flowFormRef} disabled={this.state.requesting}
+                                onEnter={() => this.flowFormRef.current.choose(false).then(({ amount }) => { this.amountInputRef.current.value = amount.toFixed(2).replace(".", ","); this.amountInputRef.current.focus(); })} />
+                            : <ChooseOutflowForm ref={this.flowFormRef} disabled={this.state.requesting}
+                                onEnter={() => this.flowFormRef.current.choose(false).then(({ amount }) => { this.amountInputRef.current.value = amount.toFixed(2).replace(".", ","); this.amountInputRef.current.focus(); })} />}
 
                         <div>Montant</div>
                         <input ref={this.amountInputRef} disabled={this.state.requesting}
@@ -145,9 +162,10 @@ class Flow extends Component {
                             onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
                             onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
 
-                        <button onClick={handleAddFlow}>Ajouter</button>
+                        <button disabled={this.state.requesting} onClick={handleAddFlow}>Ajouter</button>
 
-                    </div> : <button onClick={() => this.setState({ addingFlow: true })}>Ajouter une sortie</button>}
+                    </div> : <button disabled={this.state.requesting} onClick={() => this.setState({ addingFlow: true })}>Ajouter une {!this.state.flow.fromAccount ? "entrée" : "sortie"}</button>}
+
                 </>}
 
             </>}

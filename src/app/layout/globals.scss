@@ -199,7 +199,9 @@ table {
             padding: 0;
 
             a {
-                display: block;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
                 padding: 6px 8px;
             }
 
@@ -209,8 +211,14 @@ table {
         }
     }
 
+    tr,
+    td,
+    a {
+        height: 100%;
+    }
+
     .linked {
-        &:hover td {
+        &:has(td:hover a) td:has(a) {
             background-color: var(--light-blue);
         }
 
