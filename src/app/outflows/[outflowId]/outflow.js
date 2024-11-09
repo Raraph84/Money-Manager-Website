@@ -51,7 +51,7 @@ class Outflow extends Component {
 
             {this.state.outflow && <>
                 <div>Personne : <Link href={"/people/" + this.state.outflow.person.id}>{this.state.outflow.person.name}</Link></div>
-                <div>Destination : {this.state.outflow.fromName ?? <Link href={"/people/" + this.state.outflow.toBusiness.id}>{this.state.outflow.toBusiness.name}</Link>}</div>
+                <div>Destination : {this.state.outflow.toName ?? <Link href={"/people/" + this.state.outflow.toBusiness.id}>{this.state.outflow.toBusiness.name}</Link>}</div>
                 <div>Montant : {new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(this.state.outflow.amount)}</div>
                 <div>Description : {this.state.outflow.description ?? "Non précisée"}</div>
                 <div>Dates : {this.state.outflow.startDate ? `${moment(this.state.outflow.startDate).format("DD/MM/YYYY")} -> ${moment(this.state.outflow.endDate).format("DD/MM/YYYY")}` : "Non précisées"}</div>

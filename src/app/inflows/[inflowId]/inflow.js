@@ -55,8 +55,8 @@ class Inflow extends Component {
                 <div>Personne : <Link href={"/people/" + this.state.inflow.person.id}>{this.state.inflow.person.name}</Link></div>
                 <div>Source : {this.state.inflow.fromName ?? <Link href={"/people/" + this.state.inflow.fromBusiness.id}>{this.state.inflow.fromBusiness.name}</Link>}</div>
                 <div>Montant : {numberFormat.format(this.state.inflow.amount)}</div>
-                {this.state.inflow.fees && <div>Frais : {numberFormat.format(this.state.inflow.fees)}</div>}
-                {this.state.inflow.fees && <div>Montant payé : {numberFormat.format(this.state.inflow.amount + this.state.inflow.fees)}</div>}
+                {!!this.state.inflow.fees && <div>Frais : {numberFormat.format(this.state.inflow.fees)}</div>}
+                {!!this.state.inflow.fees && <div>Montant payé : {numberFormat.format(this.state.inflow.amount + this.state.inflow.fees)}</div>}
                 <div>Description : {this.state.inflow.description ?? "Non précisée"}</div>
                 <div>Dates : {this.state.inflow.startDate ? `${moment(this.state.inflow.startDate).format("DD/MM/YYYY")} -> ${moment(this.state.inflow.endDate).format("DD/MM/YYYY")}` : "Non précisées"}</div>
                 <div>Date : {moment(this.state.inflow.date).format("DD/MM/YYYY")}</div>
