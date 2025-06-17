@@ -1,6 +1,7 @@
 import { Component, createRef } from "react";
 import { createPerson, createAccount, createBusiness, getPeople, getAccounts, getBusinesses, createInflow, createOutflow, getInflows, getOutflows, createFlow } from "./api";
 import Link from "next/link";
+import moment from "moment";
 
 export const Loading = () => {
     window.scrollTo(0, 0);
@@ -144,12 +145,12 @@ export class CreateInflowForm extends Component {
         inflow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
         inflow.fees = this.feesInputRef.current.value ? parseFloat(this.feesInputRef.current.value.replace(",", ".")) : 0;
         inflow.description = this.descriptionInputRef.current.value || null;
-        inflow.startDate = this.startDateInputRef.current.value ? new Date(this.startDateInputRef.current.value).getTime() : null;
-        inflow.endDate = this.endDateInputRef.current.value ? new Date(this.endDateInputRef.current.value).getTime() : null;
-        inflow.date = new Date(this.dateInputRef.current.value).getTime();
+        inflow.startDate = readDateTimeInput(this.startDateInputRef.current, false);
+        inflow.endDate = readDateTimeInput(this.endDateInputRef.current, false);
+        inflow.date = readDateTimeInput(this.dateInputRef.current);
 
         if (isNaN(inflow.amount)) throw { info: <Info>Le montant doit être un nombre !</Info>, cb: () => this.amountInputRef.current.focus() };
-        if (!this.dateInputRef.current.value) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
+        if (!inflow.date) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
 
         if (create) {
             try {
@@ -188,31 +189,27 @@ export class CreateInflowForm extends Component {
             </>}
 
             <div>{(this.props.names ?? []).concat("Montant").join(" - ")}</div>
-            <input ref={this.amountInputRef} disabled={this.props.disabled}
-                onKeyDown={(event) => event.key === "Enter" && this.feesInputRef.current.focus()}
-                onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
-                onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
+            <input ref={this.amountInputRef} disabled={this.props.disabled} {...amountInputEvents}
+                onKeyDown={(event) => event.key === "Enter" && this.feesInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Frais").join(" - ")}</div>
-            <input ref={this.feesInputRef} disabled={this.props.disabled}
-                onKeyDown={(event) => event.key === "Enter" && this.descriptionInputRef.current.focus()}
-                onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
-                onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
+            <input ref={this.feesInputRef} disabled={this.props.disabled} {...amountInputEvents}
+                onKeyDown={(event) => event.key === "Enter" && this.descriptionInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Description").join(" - ")}</div>
             <input ref={this.descriptionInputRef} disabled={this.props.disabled}
                 onKeyDown={(event) => event.key === "Enter" && this.startDateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date de début").join(" - ")}</div>
-            <input ref={this.startDateInputRef} type="date" disabled={this.props.disabled}
+            <input ref={this.startDateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ time: false })}
                 onKeyDown={(event) => event.key === "Enter" && this.endDateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date de fin").join(" - ")}</div>
-            <input ref={this.endDateInputRef} type="date" disabled={this.props.disabled}
+            <input ref={this.endDateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ time: false })}
                 onKeyDown={(event) => event.key === "Enter" && this.dateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date").join(" - ")}</div>
-            <input ref={this.dateInputRef} type="datetime-local" disabled={this.props.disabled} defaultValue={new Date().toISOString().slice(0, 16)}
+            <input ref={this.dateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ defaultValue: Date.now() })}
                 onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
 
         </>;
@@ -245,12 +242,12 @@ export class CreateOutflowForm extends Component {
         outflow.toName = !this.state.toBusiness ? this.toNameInputRef.current.value : null;
         outflow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
         outflow.description = this.descriptionInputRef.current.value || null;
-        outflow.startDate = this.startDateInputRef.current.value ? new Date(this.startDateInputRef.current.value).getTime() : null;
-        outflow.endDate = this.endDateInputRef.current.value ? new Date(this.endDateInputRef.current.value).getTime() : null;
-        outflow.date = new Date(this.dateInputRef.current.value).getTime();
+        outflow.startDate = readDateTimeInput(this.startDateInputRef.current, false);
+        outflow.endDate = readDateTimeInput(this.endDateInputRef.current, false);
+        outflow.date = readDateTimeInput(this.dateInputRef.current);
 
         if (isNaN(outflow.amount)) throw { info: <Info>Le montant doit être un nombre !</Info>, cb: () => this.amountInputRef.current.focus() };
-        if (!this.dateInputRef.current.value) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
+        if (!outflow.date) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
 
         if (create) {
             try {
@@ -289,25 +286,23 @@ export class CreateOutflowForm extends Component {
             </>}
 
             <div>{(this.props.names ?? []).concat("Montant").join(" - ")}</div>
-            <input ref={this.amountInputRef} disabled={this.props.disabled}
-                onKeyDown={(event) => event.key === "Enter" && this.descriptionInputRef.current.focus()}
-                onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
-                onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
+            <input ref={this.amountInputRef} disabled={this.props.disabled} {...amountInputEvents}
+                onKeyDown={(event) => event.key === "Enter" && this.descriptionInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Description").join(" - ")}</div>
             <input ref={this.descriptionInputRef} disabled={this.props.disabled}
                 onKeyDown={(event) => event.key === "Enter" && this.startDateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date de début").join(" - ")}</div>
-            <input ref={this.startDateInputRef} type="date" disabled={this.props.disabled}
+            <input ref={this.startDateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ time: false })}
                 onKeyDown={(event) => event.key === "Enter" && this.endDateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date de fin").join(" - ")}</div>
-            <input ref={this.endDateInputRef} type="date" disabled={this.props.disabled}
+            <input ref={this.endDateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ time: false })}
                 onKeyDown={(event) => event.key === "Enter" && this.dateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date").join(" - ")}</div>
-            <input ref={this.dateInputRef} type="datetime-local" disabled={this.props.disabled} defaultValue={new Date().toISOString().slice(0, 16)}
+            <input ref={this.dateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ defaultValue: Date.now() })}
                 onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
 
         </>;
@@ -340,10 +335,10 @@ export class CreateFlowForm extends Component {
         flow.fromAccount = this.state.fromAccount ? await this.fromAccountFormRef.current.choose(create) : null;
         flow.toAccount = this.state.toAccount ? await this.toAccountFormRef.current.choose(create) : null;
         flow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
-        flow.date = new Date(this.dateInputRef.current.value).getTime();
+        flow.date = readDateTimeInput(this.dateInputRef.current);
 
         if (isNaN(flow.amount)) throw { info: <Info>Le montant doit être un nombre !</Info>, cb: () => this.amountInputRef.current.focus() };
-        if (!this.dateInputRef.current.value) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
+        if (!flow.date) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
 
         if (create) {
             try {
@@ -381,15 +376,55 @@ export class CreateFlowForm extends Component {
                 onEnter={() => this.amountInputRef.current.focus()} />}
 
             <div>{(this.props.names ?? []).concat("Montant").join(" - ")}</div>
-            <input ref={this.amountInputRef} disabled={this.props.disabled}
-                onKeyDown={(event) => event.key === "Enter" && this.dateInputRef.current.focus()}
-                onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
-                onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
+            <input ref={this.amountInputRef} disabled={this.props.disabled} {...amountInputEvents}
+                onKeyDown={(event) => event.key === "Enter" && this.dateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date").join(" - ")}</div>
-            <input ref={this.dateInputRef} type="datetime-local" disabled={this.props.disabled} defaultValue={new Date().toISOString().slice(0, 16)}
+            <input ref={this.dateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ defaultValue: Date.now() })}
                 onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
-
         </>;
     }
 }
+
+const amountInputEvents = {
+    onInput: (event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1"),
+    onBlur: (event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }
+};
+
+const dateTimeInputEvents = (options = {}) => {
+    if (typeof options.time === "undefined") options.time = true;
+
+    const template = options.time ? "DD/MM/YYYY HH:mm" : "DD/MM/YYYY";
+    const numTemplate = template.replace(/[^/ :]/g, "0");
+
+    return {
+        onFocus: (event) => event.target.setSelectionRange(0, 0),
+        onInput: (event) => {
+            let value = event.target.value;
+            let cursor = event.target.selectionStart;
+
+            if (value.length === template.length - 1) { // Backspace pressed
+                value = value.slice(0, cursor) + numTemplate.charAt(cursor) + value.slice(cursor); // Repair text
+                if (["/", " ", ":"].includes(value[cursor])) {
+                    value = value.slice(0, cursor - 1) + "0" + value.slice(cursor);
+                    cursor--;
+                }
+            }
+
+            const split = value.replace(/[^0-9\/ :]/g, "").split(/[\/ :]/g);
+            const get = (i, length = 2) => parseInt(split[i]?.slice(0, length) || "0").toString().padStart(length, "0");
+            value = options.time ? `${get(0)}/${get(1)}/${get(2, 4)} ${get(3)}:${get(4)}` : `${get(0)}/${get(1)}/${get(2, 4)}`;
+            if (["/", " ", ":"].includes(value[cursor])) cursor++;
+
+            event.target.value = value;
+            event.target.setSelectionRange(cursor, cursor);
+        },
+        defaultValue: options.defaultValue ? moment(options.defaultValue).format(template) : numTemplate
+    };
+};
+
+const readDateTimeInput = (input, time = true) => {
+    const template = time ? "DD/MM/YYYY HH:mm" : "DD/MM/YYYY";
+    const numTemplate = template.replace(/[^/ :]/g, "0");
+    return input.value !== numTemplate ? moment(input.value, template).toDate().getTime() : null;
+};
