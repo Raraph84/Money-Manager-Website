@@ -388,7 +388,8 @@ export class CreateFlowForm extends Component {
 
 const amountInputEvents = {
     onInput: (event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1"),
-    onBlur: (event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }
+    onBlur: (event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") },
+    inputMode: "numeric"
 };
 
 const dateTimeInputEvents = (options = {}) => {
@@ -419,7 +420,8 @@ const dateTimeInputEvents = (options = {}) => {
             event.target.value = value;
             event.target.setSelectionRange(cursor, cursor);
         },
-        defaultValue: options.defaultValue ? moment(options.defaultValue).format(template) : numTemplate
+        defaultValue: options.defaultValue ? moment(options.defaultValue).format(template) : numTemplate,
+        inputMode: "numeric"
     };
 };
 
