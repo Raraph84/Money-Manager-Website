@@ -2,7 +2,7 @@
 
 import { Component, createRef } from "react";
 import { usePathname, useSearchParams, useRouter, useParams } from "next/navigation";
-import { Loading, Info, ChooseOutflowForm, ChooseInflowForm, LinkedTr } from "../../../utils";
+import { Loading, Info, ChooseOutflowForm, ChooseInflowForm, LinkedTr, amountInputEvents } from "../../../utils";
 import { getFlow, deleteFlow, deleteFlowLink, createFlowLink } from "../../../api";
 import Link from "next/link";
 import moment from "moment";
@@ -85,6 +85,8 @@ class Flow extends Component {
 
         const numberFormat = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
 
+        const total = this.state.flow?.links.reduce((acc, link) => acc + (link.inflow?.amount ?? link.outflow?.amount ?? 0), 0);
+
         return <div>
 
             <div className="page-title">Transaction</div>
@@ -161,7 +163,7 @@ class Flow extends Component {
                     </div> : <div>Aucune sortie liée</div>}
                 </>}
 
-                {(!this.state.flow.fromAccount || !this.state.flow.toAccount) && this.state.addingFlow && <>
+                {this.state.addingFlow && <>
                     <br />
                     <div className="form">
 
@@ -172,10 +174,8 @@ class Flow extends Component {
                                 onEnter={() => this.flowFormRef.current.choose(false).then(({ amount }) => this.amountInputRef.current.value = amount.toFixed(2).replace(".", ",")).catch(() => { }).finally(() => this.amountInputRef.current.focus())} />}
 
                         <div>Montant</div>
-                        <input ref={this.amountInputRef} disabled={this.state.requesting}
-                            onKeyDown={(event) => event.key === "Enter" && handleAddFlow()}
-                            onBlur={(event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") }}
-                            onInput={(event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1")} />
+                        <input ref={this.amountInputRef} disabled={this.state.requesting} {...amountInputEvents}
+                            onKeyDown={(event) => event.key === "Enter" && handleAddFlow()} />
 
                         <div className="buttons">
                             <button disabled={this.state.requesting} onClick={() => this.setState({ addingFlow: false })}>Annuler</button>
@@ -187,7 +187,7 @@ class Flow extends Component {
 
                 <br />
                 <div className="buttons">
-                    {(!this.state.flow.fromAccount || !this.state.flow.toAccount) && !this.state.addingFlow &&
+                    {(!this.state.flow.fromAccount || !this.state.flow.toAccount) && !this.state.addingFlow && total !== this.state.flow.amount &&
                         <button disabled={this.state.requesting} onClick={() => this.setState({ addingFlow: true })}>Ajouter une {!this.state.flow.fromAccount ? "entrée" : "sortie"}</button>}
                     <button disabled={this.state.requesting} onClick={handleDelete}>Supprimer</button>
                 </div>

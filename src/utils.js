@@ -386,7 +386,7 @@ export class CreateFlowForm extends Component {
     }
 }
 
-const amountInputEvents = {
+export const amountInputEvents = {
     onInput: (event) => event.target.value = event.target.value.replace(/[^\d.,]/g, "").replace(/\./g, ",").replace(/^([^.]*,)|,/g, "$1"),
     onBlur: (event) => { const parsed = parseFloat(event.target.value.replace(",", ".")); event.target.value = isNaN(parsed) ? "" : parsed.toFixed(2).replace(".", ",") },
     inputMode: "numeric"

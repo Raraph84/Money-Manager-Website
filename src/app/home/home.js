@@ -60,7 +60,7 @@ class Home extends Component {
 
             {this.state.people && <div className="people-accounts">
                 <div className="title">Personnes</div>
-                <div className="list">{this.state.people.slice(1).map((person) => <Link key={person.id} href={"/people/" + person.id}>
+                <div className="list">{this.state.people.slice(1).filter((person) => person.balance).map((person) => <Link key={person.id} href={"/people/" + person.id}>
                     <div className="">{person.name}</div>
                     <div>{numberFormat.format(person.balance)}</div>
                 </Link>)}</div>
@@ -68,7 +68,7 @@ class Home extends Component {
 
             {this.state.accounts && <div className="people-accounts">
                 <div className="title">Comptes</div>
-                <div className="list">{this.state.accounts.map((account) => <Link key={account.id} href={"/accounts/" + account.id}>
+                <div className="list">{this.state.accounts.filter((account) => account.balance).map((account) => <Link key={account.id} href={"/accounts/" + account.id}>
                     <div>{account.name}</div>
                     <div>{numberFormat.format(account.balance)}</div>
                 </Link>)}</div>
