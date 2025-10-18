@@ -111,12 +111,19 @@ class ChooseForm extends Component {
     }
 }
 
+const amountSort = (a, b) => {
+    if (a.balance === 0 && b.balance === 0) return 0; // Both zero, maintain order
+    if (a.balance === 0) return 1; // Move a to the end
+    if (b.balance === 0) return -1; // Move b to the end
+    return b.balance - a.balance; // Descending order
+};
+
 const ChoosePersonForm = (props) => <ChooseForm name="Personne"
-    getOptions={() => getPeople().then((people) => people.sort((a, b) => b.balance !== 0 && b.balance - a.balance))}
+    getOptions={() => getPeople().then((people) => people.sort(amountSort))}
     getForm={(props) => <CreatePersonForm {...props} />} {...props} />;
 
 const ChooseAccountForm = (props) => <ChooseForm name="Compte"
-    getOptions={() => getAccounts().then((accounts) => accounts.sort((a, b) => b.balance !== 0 && b.balance - a.balance))}
+    getOptions={() => getAccounts().then((accounts) => accounts.sort(amountSort))}
     getForm={(props) => <CreateAccountForm {...props} />} {...props} />;
 
 const ChooseBusinessForm = (props) => <ChooseForm name="Entreprise" getOptions={getBusinesses}
