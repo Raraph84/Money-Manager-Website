@@ -111,11 +111,16 @@ class ChooseForm extends Component {
     }
 }
 
-const ChoosePersonForm = (props) => <ChooseForm name="Personne" getOptions={getPeople} getForm={(props) => <CreatePersonForm {...props} />} {...props} />;
+const ChoosePersonForm = (props) => <ChooseForm name="Personne"
+    getOptions={() => getPeople().then((people) => people.sort((a, b) => b.balance !== 0 && b.balance - a.balance))}
+    getForm={(props) => <CreatePersonForm {...props} />} {...props} />;
 
-const ChooseAccountForm = (props) => <ChooseForm name="Compte" getOptions={getAccounts} getForm={(props) => <CreateAccountForm {...props} />} {...props} />;
+const ChooseAccountForm = (props) => <ChooseForm name="Compte"
+    getOptions={() => getAccounts().then((accounts) => accounts.sort((a, b) => b.balance !== 0 && b.balance - a.balance))}
+    getForm={(props) => <CreateAccountForm {...props} />} {...props} />;
 
-const ChooseBusinessForm = (props) => <ChooseForm name="Entreprise" getOptions={getBusinesses} getForm={(props) => <CreateBusinessForm {...props} />} {...props} />;
+const ChooseBusinessForm = (props) => <ChooseForm name="Entreprise" getOptions={getBusinesses}
+    getForm={(props) => <CreateBusinessForm {...props} />} {...props} />;
 
 export class CreateInflowForm extends Component {
 
