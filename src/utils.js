@@ -48,7 +48,7 @@ class NameForm extends Component {
         return <>
             <div>{(this.props.names ?? []).concat("Nom").join(" - ")}</div>
             <input ref={this.nameInputRef} disabled={this.props.disabled} autoFocus={this.props.autoFocus}
-                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
+                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} enterKeyHint="next" />
         </>;
     }
 }
@@ -215,7 +215,7 @@ export class CreateInflowForm extends Component {
 
             <div>{(this.props.names ?? []).concat("Date").join(" - ")}</div>
             <input ref={this.dateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ defaultValue: Date.now() })}
-                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
+                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} enterKeyHint="next" />
 
         </>;
     }
@@ -308,7 +308,7 @@ export class CreateOutflowForm extends Component {
 
             <div>{(this.props.names ?? []).concat("Date").join(" - ")}</div>
             <input ref={this.dateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ defaultValue: Date.now() })}
-                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
+                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} enterKeyHint="next" />
 
         </>;
     }
@@ -386,7 +386,7 @@ export class CreateFlowForm extends Component {
 
             <div>{(this.props.names ?? []).concat("Date").join(" - ")}</div>
             <input ref={this.dateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ defaultValue: Date.now() })}
-                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} />
+                onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} enterKeyHint="next" />
         </>;
     }
 }
