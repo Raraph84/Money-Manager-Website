@@ -67,7 +67,7 @@ class ChooseForm extends Component {
 
         this.formRef = createRef();
 
-        this.state = { options: null, selected: null };
+        this.state = { options: null, selected: props.defaultCreate ? -1 : null };
     }
 
     componentDidMount() {
@@ -101,11 +101,11 @@ class ChooseForm extends Component {
                         onClick={() => this.setState({ selected: option.id }, this.props.onEnter)}>{getName(option)}</button>)}
                 </> : <>
                     <button disabled={this.props.disabled} className="selected"
-                        onClick={() => this.setState({ selected: null })}>{getName(this.state.options.find((option) => option.id === this.state.selected)) ?? "Créer"}</button>
+                        onClick={() => this.setState({ selected: null })}>{getName(this.state.options?.find((option) => option.id === this.state.selected)) ?? "Créer"}</button>
                 </>}
             </div>
 
-            {this.state.selected && this.state.selected < 0 && this.props.getForm({ ref: this.formRef, disabled: this.props.disabled, autoFocus: true, names: (this.props.names ?? []).concat(this.props.name), onEnter: this.props.onEnter })}
+            {this.state.selected && this.state.selected < 0 && this.props.getForm({ ref: this.formRef, disabled: this.props.disabled, autoFocus: true, names: (this.props.names ?? []).concat(this.props.name), onEnter: this.props.onEnter, ...this.props.formProps })}
 
         </>;
     }
@@ -202,6 +202,7 @@ export class CreateInflowForm extends Component {
 
             <div>{(this.props.names ?? []).concat("Montant").join(" - ")}</div>
             <input ref={this.amountInputRef} disabled={this.props.disabled} {...amountInputEvents}
+                defaultValue={this.props.defaultAmount?.toFixed(2).replace(".", ",") ?? ""}
                 onKeyDown={(event) => event.key === "Enter" && this.feesInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Frais").join(" - ")}</div>
@@ -299,6 +300,7 @@ export class CreateOutflowForm extends Component {
 
             <div>{(this.props.names ?? []).concat("Montant").join(" - ")}</div>
             <input ref={this.amountInputRef} disabled={this.props.disabled} {...amountInputEvents}
+                defaultValue={this.props.defaultAmount?.toFixed(2).replace(".", ",") ?? ""}
                 onKeyDown={(event) => event.key === "Enter" && this.descriptionInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Description").join(" - ")}</div>
@@ -321,11 +323,17 @@ export class CreateOutflowForm extends Component {
     }
 }
 
-export const ChooseInflowForm = (props) => <ChooseForm name="Entrée" getOptions={() => getInflows(["person", "fromBusiness"])} getForm={(props) => <CreateInflowForm {...props} />} {...props}
-    getName={(inflow) => `${inflow.fromName ?? inflow.fromBusiness.name} -> ${inflow.person.name} - ${new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(inflow.amount)}`} />;
+const numberFormat = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
 
-export const ChooseOutflowForm = (props) => <ChooseForm name="Sortie" getOptions={() => getOutflows(["person", "toBusiness"])} getForm={(props) => <CreateOutflowForm {...props} />} {...props}
-    getName={(outflow) => `${outflow.person.name} -> ${outflow.toName ?? outflow.toBusiness.name} - ${new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(outflow.amount)}`} />;
+export const ChooseInflowForm = (props) => <ChooseForm name="Entrée" {...props}
+    getOptions={() => getInflows(["person", "fromBusiness"])}
+    getForm={(props) => <CreateInflowForm {...props} />}
+    getName={(inflow) => `${inflow.fromName ?? inflow.fromBusiness.name} -> ${inflow.person.name} - ${numberFormat.format(inflow.amount)}`} />;
+
+export const ChooseOutflowForm = (props) => <ChooseForm name="Sortie" {...props}
+    getOptions={() => getOutflows(["person", "toBusiness"])}
+    getForm={(props) => <CreateOutflowForm {...props} />}
+    getName={(outflow) => `${outflow.person.name} -> ${outflow.toName ?? outflow.toBusiness.name} - ${numberFormat.format(outflow.amount)}`} />;
 
 export class CreateFlowForm extends Component {
 

@@ -169,11 +169,13 @@ class Flow extends Component {
 
                         {!this.state.flow.fromAccount
                             ? <ChooseInflowForm ref={this.flowFormRef} disabled={this.state.requesting}
+                                defaultCreate={true} formProps={{ defaultAmount: this.state.flow.amount - total }}
                                 onEnter={() => this.flowFormRef.current.choose(false)
                                     .then(({ amount }) => this.amountInputRef.current.value = amount.toFixed(2).replace(".", ","))
                                     .catch(() => { })
                                     .finally(() => this.amountInputRef.current.focus())} />
                             : <ChooseOutflowForm ref={this.flowFormRef} disabled={this.state.requesting}
+                                defaultCreate={true} formProps={{ defaultAmount: this.state.flow.amount - total }}
                                 onEnter={() => this.flowFormRef.current.choose(false)
                                     .then(({ amount }) => this.amountInputRef.current.value = amount.toFixed(2).replace(".", ","))
                                     .catch(() => { })
@@ -181,6 +183,7 @@ class Flow extends Component {
 
                         <div>Montant</div>
                         <input ref={this.amountInputRef} disabled={this.state.requesting} {...amountInputEvents}
+                            defaultValue={(this.state.flow.amount - total).toFixed(2).replace(".", ",") ?? ""}
                             onKeyDown={(event) => event.key === "Enter" && handleAddFlow()} />
 
                         <div className="buttons">
