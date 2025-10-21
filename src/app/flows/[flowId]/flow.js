@@ -23,7 +23,7 @@ class Flow extends Component {
 
         this.setState({ requesting: true });
         getFlow(this.props.params.flowId, ["fromAccount", "toAccount", "links", "links.inflow", "links.inflow.person", "links.inflow.fromBusiness", "links.outflow", "links.outflow.person", "links.outflow.toBusiness"]).then((flow) => {
-            this.setState({ requesting: false, flow, addingFlow: !flow.links.length });
+            this.setState({ requesting: false, flow, addingFlow: (!flow.fromAccount || !flow.toAccount) && !flow.links.length });
         }).catch((error) => {
             if (error === "Invalid token") {
                 localStorage.removeItem("token");
