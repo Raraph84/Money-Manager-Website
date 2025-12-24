@@ -13,11 +13,13 @@ export const deleteFlowLink = (flowId, flowLinkId) => deleteNoContent("/flows/" 
 export const createInflow = (inflow) => postProp("/inflows", inflow, "id");
 export const getInflows = (includes, people) => getProp(withParam(withIncludes("/inflows", includes), "people", people), "inflows");
 export const getInflow = (inflowId, includes) => get(withIncludes("/inflows/" + inflowId, includes));
+export const updateInflow = (inflowId, updates) => patchNoContent("/inflows/" + inflowId, updates);
 export const deleteInflow = (inflowId) => deleteNoContent("/inflows/" + inflowId);
 
 export const createOutflow = (outflow) => postProp("/outflows", outflow, "id");
 export const getOutflows = (includes, people) => getProp(withParam(withIncludes("/outflows", includes), "people", people), "outflows");
 export const getOutflow = (outflowId, includes) => get(withIncludes("/outflows/" + outflowId, includes));
+export const updateOutflow = (outflowId, updates) => patchNoContent("/outflows/" + outflowId, updates);
 export const deleteOutflow = (outflowId) => deleteNoContent("/outflows/" + outflowId);
 
 export const createPerson = (person) => postProp("/people", person, "id");
@@ -57,6 +59,8 @@ const getProp = (url, name, auth) => requestJson(url, "GET", null, auth).then((r
 
 const postProp = (url, body, name, auth) => requestJson(url, "POST", body, auth).then((res) => res[name]);
 const postNoContent = (url, body, auth) => request(url, "POST", body, auth).then(() => undefined);
+
+const patchNoContent = (url, body, auth) => request(url, "PATCH", body, auth).then(() => undefined);
 
 const deleteNoContent = (url, auth) => request(url, "DELETE", null, auth).then(() => undefined);
 
