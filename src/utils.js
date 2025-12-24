@@ -1,5 +1,5 @@
 import { Component, createRef } from "react";
-import { createPerson, createAccount, createBusiness, getPeople, getAccounts, getBusinesses, createInflow, createOutflow, getInflows, getOutflows, createFlow, updateInflow } from "./api";
+import { createPerson, createAccount, createBusiness, getPeople, getAccounts, getBusinesses, createInflow, createOutflow, getInflows, getOutflows, createFlow, updateInflow, updateOutflow } from "./api";
 import Link from "next/link";
 import moment from "moment";
 
@@ -212,7 +212,7 @@ export class CreateInflowForm extends Component {
                 : <>
                     <div>{(this.props.names ?? []).concat("Source", "Nom").join(" - ")}</div>
                     <input ref={this.fromNameInputRef} disabled={this.props.disabled} autoFocus
-                        defaultValue={this.props.defaultValue.fromName ?? ""}
+                        defaultValue={this.props.defaultValue?.fromName ?? ""}
                         onKeyDown={(event) => event.key === "Enter" && (this.amountInputRef.current ?? this.feesInputRef.current).focus()} />
                 </>}
 
@@ -230,7 +230,7 @@ export class CreateInflowForm extends Component {
 
             <div>{(this.props.names ?? []).concat("Description").join(" - ")}</div>
             <input ref={this.descriptionInputRef} disabled={this.props.disabled}
-                defaultValue={this.props.defaultValue.description ?? ""}
+                defaultValue={this.props.defaultValue?.description ?? ""}
                 onKeyDown={(event) => event.key === "Enter" && this.startDateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date de début").join(" - ")}</div>
@@ -267,27 +267,30 @@ export class CreateOutflowForm extends Component {
         this.endDateInputRef = createRef();
         this.dateInputRef = createRef();
 
-        this.state = { toBusiness: true };
+        this.state = { toBusiness: !props.defaultValue?.toName ?? true };
     }
 
     async create(create = true) {
 
         const outflow = {};
-        outflow.person = await this.personFormRef.current.choose(create);
+        if (!this.props.defaultValue?.id) outflow.person = await this.personFormRef.current.choose(create);
         outflow.toBusiness = this.state.toBusiness ? await this.toBusinessFormRef.current.choose(create) : null;
         outflow.toName = !this.state.toBusiness ? this.toNameInputRef.current.value : null;
-        outflow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
+        if (!this.props.defaultValue?.id) outflow.amount = parseFloat(this.amountInputRef.current.value.replace(",", "."));
         outflow.description = this.descriptionInputRef.current.value || null;
         outflow.startDate = readDateTimeInput(this.startDateInputRef.current, false);
         outflow.endDate = readDateTimeInput(this.endDateInputRef.current, false);
         outflow.date = readDateTimeInput(this.dateInputRef.current);
 
-        if (isNaN(outflow.amount)) throw { info: <Info>Le montant doit être un nombre !</Info>, cb: () => this.amountInputRef.current.focus() };
+        if (!this.props.defaultValue?.id && isNaN(outflow.amount)) throw { info: <Info>Le montant doit être un nombre !</Info>, cb: () => this.amountInputRef.current.focus() };
         if (!outflow.date) throw { info: <Info>Veuillez choisir une date valide !</Info>, cb: () => this.dateInputRef.current.focus() };
 
         if (create) {
             try {
-                outflow.id = await createOutflow({ ...outflow, person: outflow.person.id, toBusiness: outflow.toBusiness?.id ?? null });
+                if (!this.props.defaultValue?.id)
+                    outflow.id = await createOutflow({ ...outflow, person: outflow.person.id, toBusiness: outflow.toBusiness?.id ?? null });
+                else
+                    await updateOutflow(this.props.defaultValue.id, { ...outflow, toBusiness: outflow.toBusiness?.id ?? null });
             } catch (error) {
                 if (error === "To name must be between 2 and 50 characters")
                     throw { info: <Info>Le nom de la destination doit contenir entre 2 et 50 caractères !</Info>, cb: () => this.toNameInputRef.current.focus() };
@@ -300,13 +303,19 @@ export class CreateOutflowForm extends Component {
             }
         }
 
+        if (this.props.defaultValue?.id) {
+            outflow.id = this.props.defaultValue.id;
+            outflow.person = this.props.defaultValue.person;
+            outflow.amount = this.props.defaultValue.amount;
+        }
+
         return outflow;
     }
 
     render() {
         return <>
 
-            <ChoosePersonForm ref={this.personFormRef} disabled={this.props.disabled} names={this.props.names} />
+            {!this.props.defaultValue?.id && <ChoosePersonForm ref={this.personFormRef} disabled={this.props.disabled} names={this.props.names} />}
 
             <div>{(this.props.names ?? []).concat("Destination").join(" - ")}</div>
             <div className="choose-list-horizontal">
@@ -314,32 +323,42 @@ export class CreateOutflowForm extends Component {
                 <button disabled={this.props.disabled} className={this.state.toBusiness ? "selected" : ""} onClick={() => this.setState({ toBusiness: true })}>Entreprise</button>
             </div>
 
-            {this.state.toBusiness ? <ChooseBusinessForm ref={this.toBusinessFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Destination")}
-                onEnter={() => this.amountInputRef.current.focus()} /> : <>
-                <div>{(this.props.names ?? []).concat("Destination", "Nom").join(" - ")}</div>
-                <input ref={this.toNameInputRef} disabled={this.props.disabled} autoFocus
-                    onKeyDown={(event) => event.key === "Enter" && this.amountInputRef.current.focus()} />
-            </>}
+            {this.state.toBusiness
+                ? <ChooseBusinessForm ref={this.toBusinessFormRef} disabled={this.props.disabled} names={(this.props.names ?? []).concat("Destination")}
+                    defaultValue={this.props.defaultValue?.toBusiness?.id}
+                    onEnter={() => (this.amountInputRef.current ?? this.descriptionInputRef.current).focus()} />
+                : <>
+                    <div>{(this.props.names ?? []).concat("Destination", "Nom").join(" - ")}</div>
+                    <input ref={this.toNameInputRef} disabled={this.props.disabled} autoFocus
+                        defaultValue={this.props.defaultValue?.toName ?? ""}
+                        onKeyDown={(event) => event.key === "Enter" && (this.amountInputRef.current ?? this.descriptionInputRef.current).focus()} />
+                </>}
 
-            <div>{(this.props.names ?? []).concat("Montant").join(" - ")}</div>
-            <input ref={this.amountInputRef} disabled={this.props.disabled} {...amountInputEvents}
-                defaultValue={this.props.defaultAmount?.toFixed(2).replace(".", ",") ?? ""}
-                onKeyDown={(event) => event.key === "Enter" && this.descriptionInputRef.current.focus()} />
+            {!this.props.defaultValue?.id && <>
+                <div>{(this.props.names ?? []).concat("Montant").join(" - ")}</div>
+                <input ref={this.amountInputRef} disabled={this.props.disabled} {...amountInputEvents}
+                    defaultValue={this.props.defaultAmount?.toFixed(2).replace(".", ",") ?? ""}
+                    onKeyDown={(event) => event.key === "Enter" && this.descriptionInputRef.current.focus()} />
+            </>}
 
             <div>{(this.props.names ?? []).concat("Description").join(" - ")}</div>
             <input ref={this.descriptionInputRef} disabled={this.props.disabled}
+                defaultValue={this.props.defaultValue?.description ?? ""}
                 onKeyDown={(event) => event.key === "Enter" && this.startDateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date de début").join(" - ")}</div>
-            <input ref={this.startDateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ time: false })}
+            <input ref={this.startDateInputRef} disabled={this.props.disabled}
+                {...dateTimeInputEvents({ time: false, defaultValue: this.props.defaultValue?.startDate })}
                 onKeyDown={(event) => event.key === "Enter" && this.endDateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date de fin").join(" - ")}</div>
-            <input ref={this.endDateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ time: false })}
+            <input ref={this.endDateInputRef} disabled={this.props.disabled}
+                {...dateTimeInputEvents({ time: false, defaultValue: this.props.defaultValue?.endDate })}
                 onKeyDown={(event) => event.key === "Enter" && this.dateInputRef.current.focus()} />
 
             <div>{(this.props.names ?? []).concat("Date").join(" - ")}</div>
-            <input ref={this.dateInputRef} disabled={this.props.disabled} {...dateTimeInputEvents({ defaultValue: Date.now() })}
+            <input ref={this.dateInputRef} disabled={this.props.disabled}
+                {...dateTimeInputEvents({ defaultValue: this.props.defaultValue?.date ?? Date.now() })}
                 onKeyDown={(event) => event.key === "Enter" && this.props.onEnter && this.props.onEnter()} enterKeyHint="next" />
 
         </>;
